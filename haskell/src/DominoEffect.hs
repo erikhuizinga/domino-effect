@@ -32,11 +32,11 @@ dominoEffect ::
   -> IO ()
 dominoEffect maxPips = do
   clearScreen
-  putStr "Domino Effect using "
-  putChar $ intToDigit maxPips
-  putStrLn " as the maximum number of pips."
+  putWelcome
+  putStrLn ("\nUsing up to " ++ show maxPips ++ " pips.")
+  putStrLn $ "The initial set of dominoes consists of " ++ show (numBones maxPips) ++ " bones."
   let input = generateSolvableInput maxPips
-  putStrLn "Puzzle to solve:"
+  putStrLn "\nPuzzle to solve:"
   putPuzzle input
   putStr "\nSolving... "
   let solutions = solve input
@@ -48,6 +48,15 @@ dominoEffect maxPips = do
        _ -> show numSolutions ++ " solutions were") ++
     " found."
   return ()
+
+putWelcome :: IO ()
+putWelcome =
+  putStr
+    ("        D O M I N O\n" ++
+     " ___                    ___\n" ++
+     "|o o|   E F F E C T    |o o|\n" ++
+     "|o_o| ___ ___  ___ ___ |o_o|\n" ++
+     "|o  ||o  |ooo||ooo|o o||o o|\n" ++ "|__o||__o|ooo||ooo|o_o||o_o|\n")
 
 -- | Solve a given puzzle by finding all solutions
 solve ::
