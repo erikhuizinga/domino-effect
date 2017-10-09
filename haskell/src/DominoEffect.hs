@@ -1,6 +1,7 @@
 module DominoEffect where
 
 import           Data.Char
+import           System.Console.ANSI (clearScreen)
 
 type BoneNumber = Int
 
@@ -30,6 +31,7 @@ dominoEffect ::
      Int -- ^ The maximum number of pips on a bone
   -> IO ()
 dominoEffect maxPips = do
+  clearScreen
   putStr "Domino Effect using "
   putChar $ intToDigit maxPips
   putStrLn " as the maximum number of pips."
