@@ -8,7 +8,7 @@ type BonePips = (Int, Int)
 
 type Bone = (BoneNumber, BonePips)
 
--- Puzzle contents to be printed on the TUI
+-- | Puzzle contents to be printed on the TUI
 data Printable
   = Figure Int
   | Domino Bone
@@ -21,41 +21,92 @@ instance Show Printable where
 
 type Puzzle = [Printable]
 
--- Argument: maxPips, the maximum number of pips on a bone
-dominoEffect :: Int -> IO ()
+data Orientation
+  = SOUTH
+  | WEST
+
+-- | Argument: maxPips, the maximum number of pips on a bone
+dominoEffect ::
+     Int -- ^ The maximum number of pips on a bone
+  -> IO ()
 dominoEffect maxPips = do
   putStr "Domino Effect using "
   putChar $ intToDigit maxPips
   putStrLn " as the maximum number of pips."
+  let input = generateSolvableInput maxPips
+  putStrLn "Puzzle to solve:"
+  putPuzzle input
+  let solutions = solve input
+  print (show (length solutions) ++ " solutions were found for the puzzle.")
+  return ()
 
--- The number of bones to be placed in the puzzle
-numBones :: Int -> Int
+-- | Solve a given puzzle by finding all solutions
+solve ::
+     Puzzle -- ^ Input, i.e. 'Puzzle' to solve
+  -> [Puzzle] -- ^ Output, i.e. list of solutions
+solve puzzle = [[]]
+
+-- | Draw the puzzle to STDOUT
+putPuzzle :: Puzzle -> IO ()
+putPuzzle [] = return ()
+putPuzzle [printable] = print printable
+putPuzzle (printable:printables) = do
+  putStr $ show printable
+  putPuzzle printables
+  return ()
+
+-- | The number of bones to be placed in the puzzle
+numBones ::
+     Int -- ^ The maximum number of pips on a bone
+  -> Int
 numBones maxPips = sum [1 .. maxPips + 1]
 
--- Cartesian dimensions of the puzzle
-puzzleDimensions :: Int -> (Int, Int)
+-- | Cartesian dimensions of the puzzle
+puzzleDimensions ::
+     Int -- ^ The maximum number of pips on a bone
+  -> (Int, Int)
 puzzleDimensions maxPips = (maxPips + 1, maxPips + 2)
 
--- Linear puzzle indices, starting from 0 from top left along the rows to bottom right
-linearIndices :: Int -> [Int]
-linearIndices maxPips = [0 .. tupleProduct (puzzleDimensions maxPips) - 1]
+-- | Calculate the maximum linear index
+maxLinearIndex ::
+     Int -- ^ The maximum number of pips on a bone
+  -> Int
+maxLinearIndex maxPips = tupleProduct (puzzleDimensions maxPips) - 1
 
--- Product of Num tuple
+-- | Linear puzzle indices, starting from 0 from top left along the rows to bottom right
+linearIndices ::
+     Int -- ^ The maximum number of pips on a bone
+  -> [Int]
+linearIndices maxPips = [0 .. maxLinearIndex maxPips]
+
+-- | Product of 'Num' tuple
 tupleProduct :: Num a => (a, a) -> a
 tupleProduct = uncurry (*)
 
--- Sum of a Num tuple
+-- | Sum of a 'Num' tuple
 tupleSum :: Num a => (a, a) -> a
 tupleSum = uncurry (+)
 
--- Generate the list of bones at the start of the puzzle
-generateBones :: Int -> [Bone]
+-- | Generate the list of bones at the start of the puzzle
+generateBones ::
+     Int -- ^ The maximum number of pips on a bone
+  -> [Bone]
 generateBones maxPips = zip [1 ..] $ generateBonePips maxPips
 
--- Generate pips on bones
-generateBonePips :: Int -> [BonePips]
+-- | Generate pips on initial set of bones
+generateBonePips ::
+     Int -- ^ The maximum number of pips on a bone
+  -> [BonePips]
 generateBonePips maxPips = [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]]
 
--- Generate a solvable input for the puzzle
-generateSolvableInput :: Puzzle
-generateSolvableInput = [Empty]
+-- | Generate a solvable input for the puzzle
+generateSolvableInput ::
+     Int -- ^ The maximum number of pips on a bone
+  -> Puzzle
+generateSolvableInput maxPips = [Empty]
+
+-- | Determine if puzzle field is full, i.e., if all bones have been placed
+isFull :: Puzzle -> Bool
+isFull []                = True
+isFull (Domino _:fields) = isFull fields
+isFull _                 = False
