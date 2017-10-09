@@ -25,7 +25,7 @@ data Orientation
   = SOUTH
   | WEST
 
--- | Argument: maxPips, the maximum number of pips on a bone
+-- | Solve the Domino Effect puzzle
 dominoEffect ::
      Int -- ^ The maximum number of pips on a bone
   -> IO ()
@@ -36,8 +36,15 @@ dominoEffect maxPips = do
   let input = generateSolvableInput maxPips
   putStrLn "Puzzle to solve:"
   putPuzzle input
+  putStr "\nSolving... "
   let solutions = solve input
-  print (show (length solutions) ++ " solutions were found for the puzzle.")
+  let numSolutions = length solutions
+  putStrLn $
+    (case numSolutions of
+       0 -> "No solutions were"
+       1 -> "One solution was"
+       _ -> show numSolutions ++ " solutions were") ++
+    " found."
   return ()
 
 -- | Solve a given puzzle by finding all solutions
