@@ -1,0 +1,20 @@
+name:                domino-effect
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/erikhuizinga/domino-effect#readme
+license:             MIT
+license-file:        LICENSE
+author:              Erik Huizinga
+maintainer:          huizinga.erik@gmail.com
+copyright:           Erik Huizinga
+category:            Game
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+executable domino-effect
+  hs-source-dirs:      haskell/src
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
