@@ -1,6 +1,9 @@
 module Main where
 
-import           Data.Char
+import           DominoEffect
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+  let maxPips = 6
+  dominoEffect maxPips
+  return ()
