@@ -30,4 +30,16 @@ data PuzzleContent
 
 type Puzzle = [PuzzleContent]
 
+maxPips :: Pips
+maxPips = 1
+
+input1 :: Puzzle
+input1 = [PuzzlePips p | p <- [0, 0, 0, 1, 1, 1]]
+
+initialBones :: [Bone]
+initialBones =
+  zip
+    [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]] -- ^ 'BonePips'
+    [1 ..] -- ^ 'BoneNumber'
+
 
