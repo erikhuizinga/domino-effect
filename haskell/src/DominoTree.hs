@@ -42,4 +42,15 @@ initialBones =
     [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]] -- ^ 'BonePips'
     [1 ..] -- ^ 'BoneNumber'
 
+-- | The maximum row index in the puzzle grid
+maxRow :: Index
+maxRow = maxPips + 1
+
+-- | The maximum column in the puzzle grid
+maxColumn :: Index
+maxColumn = maxPips
+
+isValidPosition :: Position -> Bool
+isValidPosition (row, column) = row >= 0 && column >= 0 && row <= maxRow && column <= maxColumn
+
 
