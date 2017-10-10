@@ -5,7 +5,10 @@ data Tree a
   | Node a
          [Tree a]
 
-type Position = (Int, Int)
+-- | An index starts at zero
+type Index = Int
+
+type Position = (Index, Index)
 
 type Pips = Int
 
@@ -15,8 +18,16 @@ type BoneNumber = Int
 
 type BonePosition = (Position, Position)
 
-type Bone = (BonePips, BoneNumber, BonePosition)
+type Bone = (BonePips, BoneNumber)
+
+type PositionedBone = (Bone, BonePosition)
 
 type BoneTree = Tree Bone
+
+data PuzzleContent
+  = PuzzlePips Pips
+  | PlacedBone PositionedBone
+
+type Puzzle = [PuzzleContent]
 
 
