@@ -37,10 +37,10 @@ data PuzzleContent
 type Puzzle = [PuzzleContent]
 
 instance Show PuzzleContent where
-  show Empty = "  .  "
-  show (PuzzlePips pips) = "  " ++ show pips ++ "  "
+  show Empty = "   .   "
+  show (PuzzlePips pips) = "   " ++ show pips ++ "   "
   show (PlacedBone (((pips1, pips2), boneNumber), (position1, position2))) =
-    " " ++ show boneNumber ++ "#" ++ show pips1 ++ "|" ++ show pips2 ++ " "
+    " " ++ show boneNumber ++ "[" ++ show pips1 ++ "|" ++ show pips2 ++ "]"
 
 maxPips :: Pips
 maxPips = 1
@@ -63,11 +63,19 @@ maxRow = maxPips
 maxColumn :: Index
 maxColumn = maxPips + 1
 
+dominoTree :: IO ()
+dominoTree = do
+  cls
+  putStrLn "Domino Tree"
+  putStrLn "Initial puzzle:"
+  putPuzzle input1
+  return ()
+
 isValidPosition :: Position -> Bool
 isValidPosition (row, column) = row >= 0 && column >= 0 && row <= maxRow && column <= maxColumn
 
 bonesWithPips ::
-     Pips
+     Pips -- ^ 'Pips' to find
   -> [Bone] -- ^ Available 'Bone' instances
   -> [Bone]
 bonesWithPips pips = filter (pipsOnBone pips)
@@ -100,6 +108,16 @@ showAt position string = do
   putStr string
   return ()
 
-chop :: Int -> [a] -> [[a]]
+putPuzzle :: Puzzle -> IO ()
+putPuzzle = putStrLn . unlines . map showRow . chop (maxColumn + 1)
+
+showRow :: Show a => [a] -> String
+showRow = foldr ((++) . show) ""
+
+-- | Chop list after every nth element
+chop ::
+     Int -- ^ n
+  -> [a]
+  -> [[a]]
 chop _ [] = []
 chop n xs = take n xs : chop n (drop n xs)
