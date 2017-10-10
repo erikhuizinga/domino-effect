@@ -21,3 +21,4 @@ executable domino-effect
                      , ansi-terminal
                      , random
   other-modules:       DominoEffect
+                     , DominoTree
