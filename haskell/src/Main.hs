@@ -1,6 +1,7 @@
 module Main where
 
 import           DominoEffect
+import           DominoTree
 
 main :: IO ()
 main = do
