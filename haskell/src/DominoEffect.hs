@@ -2,6 +2,7 @@ module DominoEffect where
 
 import           Data.Char
 import           System.Console.ANSI (clearScreen)
+import           System.Random
 
 type BoneNumber = Int
 
@@ -14,6 +15,7 @@ data Printable
   = Figure Int
   | Domino Bone
   | Empty
+  deriving (Eq)
 
 instance Show Printable where
   show (Figure n)                      = show n
@@ -22,9 +24,10 @@ instance Show Printable where
 
 type Puzzle = [Printable]
 
-data Orientation
-  = SOUTH
-  | WEST
+data Direction
+  = RIGHT
+  | DOWN
+  deriving (Show)
 
 -- | Solve the Domino Effect puzzle
 dominoEffect ::
@@ -35,7 +38,7 @@ dominoEffect maxPips = do
   putWelcome
   putStrLn ("\nUsing up to " ++ show maxPips ++ " pips.")
   putStrLn $ "The initial set of dominoes consists of " ++ show (numBones maxPips) ++ " bones."
-  let input = generateSolvableInput maxPips
+  let input = generateInput maxPips
   putStrLn "\nPuzzle to solve:"
   putPuzzle input
   putStr "\nSolving... "
@@ -118,13 +121,45 @@ generateBonePips ::
 generateBonePips maxPips = [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]]
 
 -- | Generate a solvable input for the puzzle
-generateSolvableInput ::
+generateInput ::
      Int -- ^ The maximum number of pips on a bone
   -> Puzzle
-generateSolvableInput maxPips = [Empty]
+generateInput maxPips = generateInput' n $ replicate n Empty
+  where
+    n = numBones maxPips
+
+generateInput' :: Int -> Puzzle -> Puzzle
+generateInput' 0 puzzle = puzzle
+generateInput' n puzzle = []
+
+generatePipsPlacedAt ::
+     Puzzle -- ^ The 'Puzzle' to generate pips on
+  -> Int -- ^ Linear index of an 'Empty' element in the specified 'Puzzle'
+  -> Puzzle -- ^ The 'Puzzle' with pips placed on the specified position
+generatePipsPlacedAt puzzle i = []
+
+-- | Find first index of an element known to exist
+findFirstIndex :: Eq a => a -> [a] -> Int
+findFirstIndex _ [y] = 0 -- | Since we know the element exists, the last recursion must be a hit
+findFirstIndex x (y:ys)
+  | x == y = 0
+  | otherwise = 1 + findFirstIndex x ys
 
 -- | Determine if puzzle field is full, i.e., if all bones have been placed
 isFull :: Puzzle -> Bool
 isFull []                = True
 isFull (Domino _:fields) = isFull fields
 isFull _                 = False
+
+-- | Get a random 'IO a' from a range
+randomFromRange :: Random a => (a, a) -> IO a
+randomFromRange range = getStdRandom (randomR range)
+
+-- | Get a random 'Direction'
+randomDirection :: IO Direction
+randomDirection = do
+  r <- randomRIO (0, 1) :: IO Integer
+  return
+    (case r of
+       0 -> RIGHT
+       _ -> DOWN)
