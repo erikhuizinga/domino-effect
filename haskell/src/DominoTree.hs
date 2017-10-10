@@ -135,8 +135,18 @@ chop ::
 chop _ [] = []
 chop n xs = take n xs : chop n (drop n xs)
 
+-- TODO: Delete
+tempTree :: PipTree
+tempTree = Leaf ((1, 1), 1, 1)
+
 solve :: Puzzle -> [Bone] -> IO [Puzzle]
-solve puzzle bones = return [] -- TODO
+solve [] _ = return []
+solve (content:contents) bones = return [] -- TODO
 
 treeSolve :: Pips -> [Bone] -> PipTree
-treeSolve pips bones = Leaf ((1, 1), 1, 1)
+treeSolve pips bones =
+  let availableBones = bonesWithPips pips bones
+  in case length availableBones of
+       0 -> tempTree
+       1 -> tempTree
+       _ -> tempTree
