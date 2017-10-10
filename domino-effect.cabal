@@ -20,5 +20,5 @@ executable domino-effect
   build-depends:       base >= 4.7 && < 5
                      , ansi-terminal
                      , random
-  other-modules:       DominoEffect
-                     , DominoTree
+  other-modules:       DominoTree
+--                     , DominoEffect

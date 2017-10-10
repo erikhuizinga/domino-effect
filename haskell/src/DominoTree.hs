@@ -3,7 +3,7 @@ module DominoTree where
 data Tree a
   = Leaf a
   | Node a
-         [Tree a]
+         [Tree a] -- ^ Any number of subtrees
 
 -- | Indices start at zero
 type Index = Int
@@ -22,12 +22,14 @@ type UnpositionedBoneType = (BonePips, BoneNumber)
 
 type PositionedBoneType = (UnpositionedBoneType, BonePosition)
 
+type PositionedPips = (Position, Pips, BoneNumber)
+
+type PipTree = Tree PositionedPips
+
 data Bone
   = PositionedBone PositionedBoneType
   | UnpositionedBone UnpositionedBoneType
   deriving (Show)
-
-type BoneTree = Tree Bone
 
 data PuzzleContent
   = Empty
@@ -48,6 +50,9 @@ maxPips = 1
 input1 :: Puzzle
 input1 = [PuzzlePips p | p <- [0, 0, 0, 1, 1, 1]]
 
+empty :: Puzzle
+empty = replicate numBones Empty
+
 initialBones :: [Bone]
 initialBones =
   [ UnpositionedBone unpositionedBone
@@ -63,12 +68,20 @@ maxRow = maxPips
 maxColumn :: Index
 maxColumn = maxPips + 1
 
+numBones :: Int
+numBones = (maxRow + 1) * (maxColumn + 1)
+
+-- | Main function
 dominoTree :: IO ()
 dominoTree = do
   cls
   putStrLn "Domino Tree"
-  putStrLn "Initial puzzle:"
+  putStrLn "Initial puzzle:\n"
   putPuzzle input1
+  putStrLn "Solving..."
+  putStrLn "Intermediate solution:\n"
+  putPuzzle empty
+  solutions <- solve input1 initialBones
   return ()
 
 isValidPosition :: Position -> Bool
@@ -121,3 +134,9 @@ chop ::
   -> [[a]]
 chop _ [] = []
 chop n xs = take n xs : chop n (drop n xs)
+
+solve :: Puzzle -> [Bone] -> IO [Puzzle]
+solve puzzle bones = return [] -- TODO
+
+treeSolve :: Pips -> [Bone] -> PipTree
+treeSolve pips bones = Leaf ((1, 1), 1, 1)
