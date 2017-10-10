@@ -10,6 +10,10 @@ type BonePips = (Int, Int)
 
 type Bone = (BoneNumber, BonePips)
 
+type CartesianIndex = (Int, Int)
+
+type LinearIndex = Int
+
 -- | Puzzle contents to be printed on the TUI
 data Printable
   = Figure Int
@@ -91,15 +95,17 @@ puzzleDimensions maxPips = (maxPips + 1, maxPips + 2)
 -- | Calculate the maximum linear index
 maxLinearIndex ::
      Int -- ^ The maximum number of pips on a bone
-  -> Int
+  -> LinearIndex
 maxLinearIndex maxPips = tupleProduct (puzzleDimensions maxPips) - 1
 
 -- | Linear puzzle indices, starting from 0 from top left along the rows to bottom right
 linearIndices ::
      Int -- ^ The maximum number of pips on a bone
-  -> [Int]
+  -> [LinearIndex]
 linearIndices maxPips = [0 .. maxLinearIndex maxPips]
 
+--linearToCartesian :: LinearIndex -> CartesianIndex
+--linearToCartesian i =
 -- | Product of 'Num' tuple
 tupleProduct :: Num a => (a, a) -> a
 tupleProduct = uncurry (*)
@@ -134,12 +140,12 @@ generateInput' n puzzle = []
 
 generatePipsPlacedAt ::
      Puzzle -- ^ The 'Puzzle' to generate pips on
-  -> Int -- ^ Linear index of an 'Empty' element in the specified 'Puzzle'
+  -> LinearIndex -- ^ 'LinearIndex' of an 'Empty' element in the specified 'Puzzle'
   -> Puzzle -- ^ The 'Puzzle' with pips placed on the specified position
 generatePipsPlacedAt puzzle i = []
 
 -- | Find first index of an element known to exist
-findFirstIndex :: Eq a => a -> [a] -> Int
+findFirstIndex :: Eq a => a -> [a] -> LinearIndex
 findFirstIndex _ [y] = 0 -- | Since we know the element exists, the last recursion must be a hit
 findFirstIndex x (y:ys)
   | x == y = 0
