@@ -50,32 +50,29 @@ initialBones =
         [1 ..] -- ^ 'BoneNumber'
   ]
 
--- | The maximum row index in the puzzle grid
 maxRow :: Index
 maxRow = maxPips + 1
 
--- | The maximum column in the puzzle grid
 maxColumn :: Index
 maxColumn = maxPips
 
 isValidPosition :: Position -> Bool
 isValidPosition (row, column) = row >= 0 && column >= 0 && row <= maxRow && column <= maxColumn
 
-findAvailableBonesWithPips ::
+bonesWithPips ::
      Pips
   -> [Bone] -- ^ Available 'Bone' instances
   -> [Bone]
-findAvailableBonesWithPips _ []              = []
-findAvailableBonesWithPips pips (bone:bones) = [] -- TODO
+bonesWithPips pips = filter (pipsOnBone pips)
 
-arePipsOnBone :: Pips -> Bone -> Bool
-arePipsOnBone pips bone =
+pipsOnBone :: Pips -> Bone -> Bool
+pipsOnBone pips bone =
   case bone of
-    (PositionedBone (unpositionedBone, _)) -> arePipsOnUnpositionedBone pips unpositionedBone
-    (UnpositionedBone unpositionedBone) -> arePipsOnUnpositionedBone pips unpositionedBone
+    (PositionedBone (unpositionedBone, _)) -> pipsOnUnpositionedBone pips unpositionedBone
+    (UnpositionedBone unpositionedBone) -> pipsOnUnpositionedBone pips unpositionedBone
 
-arePipsOnUnpositionedBone :: Pips -> UnpositionedBoneType -> Bool
-arePipsOnUnpositionedBone pips (bonePips, _) = elemPipsBonePips pips bonePips
+pipsOnUnpositionedBone :: Pips -> UnpositionedBoneType -> Bool
+pipsOnUnpositionedBone pips (bonePips, _) = elemPipsBonePips pips bonePips
 
 elemPipsBonePips :: Pips -> BonePips -> Bool
 elemPipsBonePips pips (bonePips1, bonePips2) = pips `elem` [bonePips1, bonePips2]
