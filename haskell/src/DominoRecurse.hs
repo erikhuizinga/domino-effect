@@ -155,7 +155,7 @@ neighboursInSet (row, column, _) positions =
   ]
 
 get :: [a] -> Position -> [a]
-get xs (_, _, index) = [xs !! index | index < length xs]
+get xs (_, _, index) = take 1 $ drop index xs
 
 updateList ::
      [a] -- ^ Current list
