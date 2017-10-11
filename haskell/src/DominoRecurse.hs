@@ -9,7 +9,7 @@ type Bone = (Pips, Int)
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
-  let solutions = recurse input0 initialPositions initialBones [initialSolution input0]
+  let solutions = recurse input0 initialPositions initialBones [initialSolution]
   print solutions
   return ()
 
@@ -36,8 +36,11 @@ funInitialPositions :: Int -> [Position]
 funInitialPositions maxPips =
   [(r, c) | r <- [1 .. funMaxRow maxPips], c <- [1 .. funMaxColumn maxPips]]
 
-initialSolution :: [Int] -> [Int]
-initialSolution = map (const 0)
+initialSolution :: [Int]
+initialSolution = funInitialSolution maxPips
+
+funInitialSolution :: Int -> [Int]
+funInitialSolution maxPips = replicate (2 * funNumBones maxPips) 0
 
 maxRow :: Int
 maxRow = funMaxRow maxPips
@@ -52,7 +55,10 @@ funMaxColumn :: Int -> Int
 funMaxColumn maxPips = funMaxRow maxPips + 1
 
 numBones :: Int
-numBones = sum [1 .. maxPips + 1]
+numBones = funNumBones maxPips
+
+funNumBones :: Int -> Int
+funNumBones maxPips = sum [1 .. maxPips + 1]
 
 recurse ::
      [Int] -- ^ Numbers to place bones on
@@ -76,6 +82,7 @@ bonesWithPips pips bones =
   [ ((pips3, pips4), num)
   | ((pips1, pips2), num) <- bones
   , pipsOnBone pips ((pips1, pips2), num)
+  -- Ensure the matched pips are always first in the tuple
   , let pips3 = pips
   , let pips4 =
           if pips == pips1
