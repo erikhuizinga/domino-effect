@@ -4,7 +4,7 @@ import           DominoRecurse
 
 main :: IO ()
 main = do
-  let maxPips = 1
+  let maxPips = 6
 --  dominoEffect maxPips
 --  dominoTree
   funDominoRecurse maxPips
