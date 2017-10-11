@@ -1,6 +1,13 @@
+-- | The main module for the Domino Effect puzzle
 module Main where
 
-import           Data.Char
+import           DominoEffect
 
+-- | Run the Domino Effect challenge
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+  let maxPips = 6
+--  dominoEffect maxPips
+--  dominoTree
+  funDominoEffect maxPips
+  return ()
