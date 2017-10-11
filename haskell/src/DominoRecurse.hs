@@ -4,25 +4,48 @@ module DominoRecurse where
 -- Top left is (0, 0, 0), bottom right for maxPips = 6 is (6, 7, 55)
 type Position = (Int, Int, Int)
 
-type Pips = (Int, Int)
+type Pips = Int
 
-type Bone = (Pips, Int)
+type BonePips = (Pips, Pips)
+
+type BoneNumber = Int
+
+type Bone = (BonePips, BoneNumber)
+
+type Solution = [BoneNumber]
+
+type Puzzle = [Pips]
 
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
-  let solutions = recurse input0 initialPositions initialBones [initialSolution]
+  let solutions = recurse input1 initialPositions initialBones [initialSolution]
+  print solutions
+  return ()
+
+funDominoRecurse :: Int -> IO ()
+funDominoRecurse maxPips = do
+  putStrLn "Domino Recurse"
+  let solutions =
+        recurse
+          (inputs !! maxPips)
+          (funInitialPositions maxPips)
+          (funInitialBones maxPips)
+          [funInitialSolution maxPips]
   print solutions
   return ()
 
 maxPips :: Int
 maxPips = 0
 
-input0 :: [Int]
+input0 :: Puzzle
 input0 = [0, 0]
 
-input1 :: [Int]
+input1 :: Puzzle
 input1 = [0, 0, 0, 1, 1, 1]
+
+inputs :: [Puzzle]
+inputs = [input0, input1]
 
 initialBones :: [Bone]
 initialBones = funInitialBones maxPips
@@ -43,10 +66,10 @@ funInitialPositions maxPips =
      , let index = column + row + row * maxColumn
      ]
 
-initialSolution :: [Int]
+initialSolution :: Solution
 initialSolution = funInitialSolution maxPips
 
-funInitialSolution :: Int -> [Int]
+funInitialSolution :: Int -> Solution
 funInitialSolution maxPips = replicate (2 * funNumBones maxPips) 0
 
 maxRow :: Int
@@ -68,11 +91,11 @@ funNumBones :: Int -> Int
 funNumBones maxPips = sum [1 .. maxPips + 1]
 
 recurse ::
-     [Int] -- ^ Number of pips to place corresponding bone pips on
+     Puzzle -- ^ Numbers of pips to place corresponding bone pips on
   -> [Position] -- ^ Set of available positions
   -> [Bone] -- ^ Set of available bones
-  -> [[Int]] -- ^ Found solutions, the current being the head
-  -> [[Int]] -- ^ Solutions
+  -> [Solution] -- ^ Found solutions, the current being the head
+  -> [Solution] -- ^ Solutions
 recurse _ [] [] solutions = solutions -- All bones have been positioned
 recurse _ [] _ _ = [] -- No more available positions, discard solution
 recurse _ _ [] _ = [] -- No more available bones, discard solution
@@ -102,8 +125,8 @@ recurse pips (position:positions) bones (solution:solutions) =
 --  in []
 --
 bonesWithPips ::
-     Int -- ^ 'Pips' to find on bones
-  -> [Bone] -- ^ Available 'Bone' instances
+     Pips -- ^ 'Pips' to find on bones
+  -> [Bone] -- ^ Available bones
   -> [Bone] -- ^ 'Bone' matches, with the matched pips first in the pips tuple
 bonesWithPips pips bones =
   [ ((pips3, pips4), num)
@@ -117,7 +140,7 @@ bonesWithPips pips bones =
             else pips1
   ]
 
-pipsOnBone :: Int -> Bone -> Bool
+pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
 
 -- | Get the east (right) and south (down) neighbours of the specified position from the specified
@@ -131,17 +154,14 @@ neighboursInSet (row, column, _) positions =
   , column' == column''
   ]
 
---position2Index :: Int -> Position -> Int
---position2Index rowLength (row, column) = column - 1 + (row - 1) * rowLength
---
 get :: [a] -> Position -> [a]
 get xs (_, _, index) = [xs !! index | index < length xs]
 
 updateList ::
-     [Int] -- ^ Current list
+     [a] -- ^ Current list
   -> [Position] -- ^ Positions to update
-  -> Int -- ^ Value to put
-  -> [Int] -- ^ Resulting list
+  -> a -- ^ Value to put at the specified positions
+  -> [a] -- ^ Resulting list
 updateList xs [] _ = xs
 updateList xs ((_, _, index):positions) value =
   updateList (take index xs ++ [value] ++ drop (index + 1) xs) positions value
