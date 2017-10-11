@@ -1,5 +1,11 @@
 module DominoRecurse where
 
+type Position = (Int, Int)
+
+type Pips = (Int, Int)
+
+type Bone = (Pips, Int)
+
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
@@ -16,11 +22,11 @@ input0 = [0, 0]
 input1 :: [Int]
 input1 = [0, 0, 0, 1, 1, 1]
 
-initialBones :: [((Int, Int), Int)]
 initialBones = zip [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]] [1 ..]
+initialBones :: [Bone]
 
-initialPositions :: [(Int, Int)]
 initialPositions = [(r, c) | r <- [1 .. maxRow], c <- [1 .. maxColumn]]
+initialPositions :: [Position]
 
 initialSolution :: [Int] -> [Int]
 initialSolution = map (const 0)
@@ -36,8 +42,8 @@ numBones = sum [1 .. maxPips + 1]
 
 recurse ::
      [Int] -- ^ Numbers to place bones on
-  -> [(Int, Int)] -- ^ Set of available positions
-  -> [((Int, Int), Int)] -- ^ Set of available bones
+  -> [Position] -- ^ Set of available positions
+  -> [Bone] -- ^ Set of available bones
   -> [[Int]] -- ^ Current solutions
   -> [[Int]] -- ^ Solutions
 recurse _ [] [] solutions                 = solutions
