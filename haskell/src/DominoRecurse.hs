@@ -1,7 +1,8 @@
 module DominoRecurse where
 
--- | (row, column) pair, starting from 1
-type Position = (Int, Int)
+-- | (row, column, index) triplet, all starting from 0
+-- Top left is (0, 0, 0), bottom right for maxPips = 6 is (6, 7, 55)
+type Position = (Int, Int, Int)
 
 type Pips = (Int, Int)
 
@@ -10,7 +11,7 @@ type Bone = (Pips, Int)
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
-  let solutions = recurse input0 initialPositions maxColumn initialBones [initialSolution]
+  let solutions = recurse input0 initialPositions initialBones [initialSolution]
   print solutions
   return ()
 
@@ -35,7 +36,12 @@ initialPositions = funInitialPositions maxPips
 
 funInitialPositions :: Int -> [Position]
 funInitialPositions maxPips =
-  [(r, c) | r <- [1 .. funMaxRow maxPips], c <- [1 .. funMaxColumn maxPips]]
+  let maxColumn = funMaxColumn maxPips
+  in [ (row, column, index)
+     | row <- [0 .. funMaxRow maxPips]
+     , column <- [0 .. maxColumn]
+     , let index = column + row + row * maxColumn
+     ]
 
 initialSolution :: [Int]
 initialSolution = funInitialSolution maxPips
@@ -47,7 +53,7 @@ maxRow :: Int
 maxRow = funMaxRow maxPips
 
 funMaxRow :: Int -> Int
-funMaxRow maxPips = maxPips + 1
+funMaxRow maxPips = maxPips
 
 maxColumn :: Int
 maxColumn = funMaxColumn maxPips
@@ -64,15 +70,14 @@ funNumBones maxPips = sum [1 .. maxPips + 1]
 recurse ::
      [Int] -- ^ Number of pips to place corresponding bone pips on
   -> [Position] -- ^ Set of available positions
-  -> Int -- ^ Row length
   -> [Bone] -- ^ Set of available bones
   -> [[Int]] -- ^ Found solutions, the current being the head
   -> [[Int]] -- ^ Solutions
-recurse _ [] _ [] solutions = solutions -- All bones have been positioned
-recurse _ [] _ _ _ = [] -- No more available positions, discard solution
-recurse _ _ _ [] _ = [] -- No more available bones, discard solution
-recurse pips (position:positions) rowLength bones (solution:solutions) =
-  [ updateList solution [position, neighbourPosition] rowLength boneNumber
+recurse _ [] [] solutions = solutions -- All bones have been positioned
+recurse _ [] _ _ = [] -- No more available positions, discard solution
+recurse _ _ [] _ = [] -- No more available bones, discard solution
+recurse pips (position:positions) bones (solution:solutions) =
+  [ updateList solution [position, neighbourPosition] boneNumber
   -- For all combinations of positions, neighbouring positions and corresponding bone numbers
   | (position, neighbourPosition, boneNumber) <-
       [ (position, neighbourPosition, boneNumber)
@@ -81,7 +86,7 @@ recurse pips (position:positions) rowLength bones (solution:solutions) =
       -- For all neighbours of that position
       , neighbourPosition <- neighboursInSet position positions
       -- For all pips on the neighbouring positions
-      , neighbourPips <- get pips neighbourPosition rowLength
+      , neighbourPips <- get pips neighbourPosition
       -- Match the other pips on the bone as well
       , bonePips == neighbourPips
       ]
@@ -115,32 +120,28 @@ bonesWithPips pips bones =
 pipsOnBone :: Int -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
 
-{-| Get the east (right) and south (down) neighbours of the specified position from the specified
-    set of positions
--}
+-- | Get the east (right) and south (down) neighbours of the specified position from the specified
+--   set of positions
 neighboursInSet :: Position -> [Position] -> [Position]
-neighboursInSet (row, column) positions =
-  [position | position <- [(row, column + 1), (row + 1, column)], position `elem` positions]
+neighboursInSet (row, column, _) positions =
+  [ (row', column', index)
+  | (row', column') <- [(row, column + 1), (row + 1, column)]
+  , (row'', column'', index) <- positions -- Get index from available positions
+  , row' == row''
+  , column' == column''
+  ]
 
-position2Index :: Int -> Position -> Int
-position2Index rowLength (row, column) = column - 1 + (row - 1) * rowLength
-
-get :: [a] -> Position -> Int -> [a]
-get xs position rowLength =
-  let index = position2Index rowLength position
-  in [xs !! index | index < length xs]
+--position2Index :: Int -> Position -> Int
+--position2Index rowLength (row, column) = column - 1 + (row - 1) * rowLength
+--
+get :: [a] -> Position -> [a]
+get xs (_, _, index) = [xs !! index | index < length xs]
 
 updateList ::
      [Int] -- ^ Current list
   -> [Position] -- ^ Positions to update
-  -> Int -- ^ Row length
   -> Int -- ^ Value to put
   -> [Int] -- ^ Resulting list
-updateList xs [] _ _ = xs
-updateList xs (position:positions) rowLength value =
-  updateList
-    (let index = position2Index rowLength position
-     in take index xs ++ [value] ++ drop (index + 1) xs)
-    positions
-    rowLength
-    value
+updateList xs [] _ = xs
+updateList xs ((_, _, index):positions) value =
+  updateList (take index xs ++ [value] ++ drop (index + 1) xs) positions value
