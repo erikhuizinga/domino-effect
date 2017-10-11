@@ -69,12 +69,12 @@ funInitialBones maxPips =
     [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]]
     [defaultBoneNumber + 1 ..]
 
--- | The initial set of positions in the puzzle, on which bones have to be placed
+-- | The initial set of 'Position's in the 'Puzzle', on which 'Bone's have to be placed
 initialPositions :: [Position]
 initialPositions = funInitialPositions maxPips
 
--- | Function to generate the initial set of positions, depending on the maximum number of pips
---   on a bone
+-- | Function to generate the initial set of 'Position's, depending on the maximum number of 'Pips'
+--   on a 'Bone'
 funInitialPositions :: Int -> [Position]
 funInitialPositions maxPips =
   let maxColumn = funMaxColumn maxPips
@@ -84,15 +84,16 @@ funInitialPositions maxPips =
      , let index = column + row + row * maxColumn
      ]
 
--- | The initial solution, consisting entirely of non-existent bone numbers
+-- | The initial 'Solution', consisting entirely of non-existent 'BoneNumber's
 initialSolution :: Solution
 initialSolution = funInitialSolution maxPips
 
--- | Function to generate the initial solution, depending on the maximum number of pips on a bone
+-- | Function to generate the initial 'Solution', depending on the maximum number of 'Pips' on a
+--   'Bone'
 funInitialSolution :: Int -> Solution
 funInitialSolution maxPips = replicate (2 * funNumBones maxPips) defaultBoneNumber
 
--- | The default bone number, used by no bone in the initial set
+-- | The default 'BoneNumber', not to be used by any 'Bone' in the initial set
 defaultBoneNumber :: BoneNumber
 defaultBoneNumber = 0
 
@@ -100,7 +101,8 @@ defaultBoneNumber = 0
 maxRow :: Int
 maxRow = funMaxRow maxPips
 
--- | Function to calculate the maximum row index, depending on the maximum number of pips on a bone
+-- | Function to calculate the maximum row index, depending on the maximum number of 'Pips' on a
+--   'Bone'
 funMaxRow :: Int -> Int
 funMaxRow maxPips = maxPips
 
@@ -108,17 +110,17 @@ funMaxRow maxPips = maxPips
 maxColumn :: Int
 maxColumn = funMaxColumn maxPips
 
--- | Function to calculate the maximum column index, depending on the maximum number of pips on a
---   bone
+-- | Function to calculate the maximum column index, depending on the maximum number of 'Pips' on a
+--   'Bone'
 funMaxColumn :: Int -> Int
 funMaxColumn maxPips = funMaxRow maxPips + 1
 
--- | The number of bones in the initial set
+-- | The number of 'Bone's in the initial set
 numBones :: Int
 numBones = funNumBones maxPips
 
--- | Function to calculate the number of bones in the initial set, depending on the maximum number
---   of pips on a bone
+-- | Function to calculate the number of 'Bone's in the initial set, depending on the maximum number
+--   of 'Pips' on a 'Bone'
 funNumBones :: Int -> Int
 funNumBones maxPips = sum [1 .. maxPips + 1]
 
@@ -137,31 +139,31 @@ solve puzzle positions bones solution
       | move <- findMoves puzzle positions bones
       ]
 
--- | Check if a solution solves a puzzle
+-- | Check if a 'Solutions' solves a 'Puzzle'
 isSolved :: Solution -> Bool
 isSolved = notElem defaultBoneNumber
 
--- | Check if continuing is possible with the given positions and bones
+-- | Check if continuing is possible with the given 'Positions' and 'Bone's
 okToContinue :: [Position] -> [Bone] -> Bool
 okToContinue [] _ = False
 okToContinue _ [] = False
 okToContinue _ _  = True
 
--- | Remove positions on which a move has been played
+-- | Remove 'Position's on which a 'Move' has been applied
 filterPositions :: [Position] -> Move -> [Position]
 filterPositions positions (position1, position2, _) =
   filter (\p -> p `notElem` [position1, position2]) positions
 
--- | Remove bones that have been played
+-- | Remove 'Bone's that have been used
 filterBones :: [Bone] -> Move -> [Bone]
 filterBones bones (_, _, boneNumber) = filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
 
--- | Store a move in the intermediate solution by updating it
+-- | Store a 'Move' in the intermediate 'Solution' by updating it
 applyMove :: Solution -> Move -> Solution
 applyMove solution (position1, position2, boneNumber) =
   updateList solution [position1, position2] boneNumber
 
--- | Update a list at the specified positions with the specified value
+-- | Update a list at the specified 'Position's with the specified value
 updateList ::
      [a] -- ^ Current list
   -> [Position] -- ^ Positions to update
@@ -171,7 +173,7 @@ updateList xs [] _ = xs
 updateList xs ((_, _, index):positions) value =
   updateList (take index xs ++ [value] ++ drop (index + 1) xs) positions value
 
--- | Find the moves that place one bone
+-- | Find the 'Move's that legally place one 'Bone'
 findMoves ::
      Puzzle -- ^ 'Puzzle' to solve
   -> [Position] -- ^ Available positions, the head being the one being currently solved
@@ -185,11 +187,11 @@ findMoves puzzle (position:positions) bones =
   , bonePips2 == neighbourPips
   ]
 
--- | Find boned containing the specified pips
+-- | Find 'Bone's containing the specified 'Pips'
 bonesWithPips ::
-     Pips -- ^ 'Pips' to find on bones
-  -> [Bone] -- ^ Available bones
-  -> [Bone] -- ^ 'Bone' matches, with the matched pips first in the pips tuple
+     Pips -- ^ 'Pips' to find on 'Bone's
+  -> [Bone] -- ^ Available 'Bone's
+  -> [Bone] -- ^ 'Bone' matches, with the matched 'Pips' first in the tuple
 bonesWithPips pips bones =
   [ ((pips3, pips4), num)
   | ((pips1, pips2), num) <- bones
@@ -202,12 +204,12 @@ bonesWithPips pips bones =
             else pips1
   ]
 
--- | Get the element at the specified position, or empty if out of bounds
+-- | Get the element at the specified 'Position', or empty if out of bounds
 get :: [a] -> Position -> [a]
 get xs (_, _, index) = take 1 $ drop index xs
 
--- | Get the east (right) and south (down) neighbours of the specified position from the specified
---   set of positions
+-- | Get the east (right) and south (down) neighbours of the specified 'Position' from the specified
+--   set of 'Position's
 neighboursInSet :: Position -> [Position] -> [Position]
 neighboursInSet (row, column, _) positions =
   [ (row', column', index)
@@ -217,6 +219,6 @@ neighboursInSet (row, column, _) positions =
   , column' == column''
   ]
 
--- | Check if the specified pips are on a bone
+-- | Check if the specified 'Pips' are on a 'Bone'
 pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
