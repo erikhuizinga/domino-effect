@@ -22,20 +22,34 @@ input0 = [0, 0]
 input1 :: [Int]
 input1 = [0, 0, 0, 1, 1, 1]
 
-initialBones = zip [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]] [1 ..]
 initialBones :: [Bone]
+initialBones = funInitialBones maxPips
 
-initialPositions = [(r, c) | r <- [1 .. maxRow], c <- [1 .. maxColumn]]
+funInitialBones :: Int -> [Bone]
+funInitialBones maxPips =
+  zip [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]] [1 ..]
+
 initialPositions :: [Position]
+initialPositions = funInitialPositions maxPips
+
+funInitialPositions :: Int -> [Position]
+funInitialPositions maxPips =
+  [(r, c) | r <- [1 .. funMaxRow maxPips], c <- [1 .. funMaxColumn maxPips]]
 
 initialSolution :: [Int] -> [Int]
 initialSolution = map (const 0)
 
 maxRow :: Int
-maxRow = maxPips + 1
+maxRow = funMaxRow maxPips
+
+funMaxRow :: Int -> Int
+funMaxRow maxPips = maxPips + 1
 
 maxColumn :: Int
-maxColumn = maxRow + 1
+maxColumn = funMaxColumn maxPips
+
+funMaxColumn :: Int -> Int
+funMaxColumn maxPips = funMaxRow maxPips + 1
 
 numBones :: Int
 numBones = sum [1 .. maxPips + 1]
