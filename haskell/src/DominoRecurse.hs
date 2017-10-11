@@ -1,5 +1,6 @@
 module DominoRecurse where
 
+-- | (row, column) pair, starting from 1
 type Position = (Int, Int)
 
 type Pips = (Int, Int)
@@ -9,7 +10,7 @@ type Bone = (Pips, Int)
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
-  let solutions = recurse input0 initialPositions initialBones [initialSolution]
+  let solutions = recurse input0 initialPositions initialBones []
   print solutions
   return ()
 
@@ -36,12 +37,12 @@ funInitialPositions :: Int -> [Position]
 funInitialPositions maxPips =
   [(r, c) | r <- [1 .. funMaxRow maxPips], c <- [1 .. funMaxColumn maxPips]]
 
-initialSolution :: [Int]
-initialSolution = funInitialSolution maxPips
-
-funInitialSolution :: Int -> [Int]
-funInitialSolution maxPips = replicate (2 * funNumBones maxPips) 0
-
+--initialSolution :: [Int]
+--initialSolution = funInitialSolution maxPips
+--
+--funInitialSolution :: Int -> [Int]
+--funInitialSolution maxPips = replicate (2 * funNumBones maxPips) 0
+--
 maxRow :: Int
 maxRow = funMaxRow maxPips
 
@@ -61,23 +62,32 @@ funNumBones :: Int -> Int
 funNumBones maxPips = sum [1 .. maxPips + 1]
 
 recurse ::
-     [Int] -- ^ Numbers to place bones on
+     [Int] -- ^ Number of pips to place corresponding bone pips on
   -> [Position] -- ^ Set of available positions
   -> [Bone] -- ^ Set of available bones
   -> [[Int]] -- ^ Current solutions
   -> [[Int]] -- ^ Solutions
-recurse _ [] [] solutions = solutions -- All bones have been positioned
-recurse _ [] _ _ = [] -- No more available positions
-recurse _ _ [] _ = [] -- No more available bones
-recurse (pips:pipss) (pos:poss) bones (sol:sols) =
-  let pipBones = bonesWithPips pips bones
-      neighbours = neighboursInSet pos poss
-  in []
+recurse _ [] [] solutions                 = solutions -- All bones have been positioned
+recurse _ [] _ _                          = [] -- No more available positions
+recurse _ _ [] _                          = [] -- No more available bones
+recurse [] _ _ _                          = [] -- TODO: Required?
+recurse _ _ _ []                          = [] -- TODO: Required?
+recurse pipss (pos:poss) bones (sol:sols) = []
 
+--  [ solution
+--  | bone <- bonesWithPips (head pipss) bones
+--  , neighbour <- neighboursInSet pos poss
+--  , neighbourPips pos poss rowLength pips
+--  ]
+--
+--  let pipBones = bonesWithPips pips bones
+--      neighbours = neighboursInSet pos poss
+--  in []
+--
 bonesWithPips ::
-     Int -- ^ 'Pips' to find
+     Int -- ^ 'Pips' to find on bones
   -> [Bone] -- ^ Available 'Bone' instances
-  -> [Bone]
+  -> [Bone] -- ^ 'Bone' matches, with the matched pips first in the pips tuple
 bonesWithPips pips bones =
   [ ((pips3, pips4), num)
   | ((pips1, pips2), num) <- bones
@@ -97,4 +107,19 @@ pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
     set of positions
 -}
 neighboursInSet :: Position -> [Position] -> [Position]
-neighboursInSet (r, c) poss = [pos | pos <- [(r + 1, c), (r, c + 1)], pos `elem` poss]
+neighboursInSet (r, c) poss = [pos | pos <- [(r, c + 1), (r + 1, c)], pos `elem` poss]
+
+position2Index :: Int -> Position -> Int
+position2Index rowLength (row, column) = column - 1 + (row - 1) * rowLength
+
+get :: [a] -> [Position] -> Int -> [a]
+get xs positions rowLength =
+  [ xs !! index
+  | position <- positions
+  , let index = position2Index rowLength position
+  , index < length xs
+  ]
+
+neighbourPips :: Position -> [Position] -> Int -> [Int] -> [Int]
+neighbourPips position positions rowLength pips =
+  get pips (neighboursInSet position positions) rowLength
