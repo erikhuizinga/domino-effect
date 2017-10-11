@@ -129,3 +129,13 @@ neighbourPips ::
   -> [Int]
 neighbourPips position positions rowLength pips =
   get pips (neighboursInSet position positions) rowLength
+
+updateList ::
+     [Int] -- ^ Current list
+  -> Position -- ^ Position to update
+  -> Int -- ^ Row length
+  -> Int -- ^ Value to put
+  -> [Int] -- ^ Resulting list
+updateList xs position rowLength value =
+  let index = position2Index rowLength position
+  in take index xs ++ [value] ++ drop (index + 1) xs
