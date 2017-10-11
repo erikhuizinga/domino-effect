@@ -10,7 +10,7 @@ type Bone = (Pips, Int)
 dominoRecurse :: IO ()
 dominoRecurse = do
   putStrLn "Domino Recurse"
-  let solutions = recurse input0 initialPositions initialBones []
+  let solutions = recurse input0 initialPositions maxColumn initialBones []
   print solutions
   return ()
 
@@ -64,21 +64,22 @@ funNumBones maxPips = sum [1 .. maxPips + 1]
 recurse ::
      [Int] -- ^ Number of pips to place corresponding bone pips on
   -> [Position] -- ^ Set of available positions
+  -> Int -- ^ Row length
   -> [Bone] -- ^ Set of available bones
   -> [[Int]] -- ^ Current solutions
   -> [[Int]] -- ^ Solutions
-recurse _ [] [] solutions                 = solutions -- All bones have been positioned
-recurse _ [] _ _                          = [] -- No more available positions
-recurse _ _ [] _                          = [] -- No more available bones
-recurse [] _ _ _                          = [] -- TODO: Required?
-recurse _ _ _ []                          = [] -- TODO: Required?
-recurse pipss (pos:poss) bones (sol:sols) = []
+recurse _ [] _ [] solutions = solutions -- All bones have been positioned
+recurse _ [] _ _ _ = [] -- No more available positions, discard solution
+recurse _ _ _ [] _ = [] -- No more available bones, discard solution
+recurse pips (pos:poss) rowLength bones sols =
+  [ solution
+  | ((_, bonePips), boneNumber) <- bonesWithPips (head pips) bones
+  , neighbourPosition <- neighboursInSet pos poss
+  , nPips <- get pips [neighbourPosition] rowLength
+  , bonePips == nPips
+  , let solution = []
+  ]
 
---  [ solution
---  | bone <- bonesWithPips (head pipss) bones
---  , neighbour <- neighboursInSet pos poss
---  , neighbourPips pos poss rowLength pips
---  ]
 --
 --  let pipBones = bonesWithPips pips bones
 --      neighbours = neighboursInSet pos poss
@@ -120,6 +121,11 @@ get xs positions rowLength =
   , index < length xs
   ]
 
-neighbourPips :: Position -> [Position] -> Int -> [Int] -> [Int]
+neighbourPips ::
+     Position -- ^ 'Position' to get neighbouring pips from
+  -> [Position] -- ^ Available positions
+  -> Int -- ^ Row lengths
+  -> [Int] -- ^ Pips in grid
+  -> [Int]
 neighbourPips position positions rowLength pips =
   get pips (neighboursInSet position positions) rowLength
