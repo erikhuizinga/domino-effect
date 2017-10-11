@@ -182,35 +182,25 @@ unfold predicateFun headFun tailFun x
 isSolved :: Solution -> Bool
 isSolved = notElem defaultBoneNumber
 
--- | Determine if finished, being any of:
---   - All available positions have been exhausted
---   - All bones left to place have been exhausted
---   - 'Solution' is solved, i.e., isSolved
-isFinished :: [Position] -> [Bone] -> Solution -> Bool
-isFinished positions bones solution = null positions || null bones || isSolved solution
-
--- | Determine state validity, i.e. whether or not to be able to continue with a solution
-isValid :: [Position] -> [Bone] -> Solution -> Bool
-isValid [] [] _      = True
-isValid [] _ _       = False
-isValid _ [] _       = False
-isValid _ _ solution = not $ isSolved solution -- Probably never a case
+okToContinue :: [Position] -> [Bone] -> Bool
+okToContinue [] _ = False
+okToContinue _ [] = False
+okToContinue _ _  = True
 
 recurse2 :: Puzzle -> [Position] -> [Bone] -> Solution -> [Solution]
 recurse2 puzzle positions bones solution
-  | isFinished positions bones solution && valid = [solution]
-  | not valid = []
+  | isSolved solution = [solution]
+  | not $ okToContinue positions bones = []
   | otherwise =
     concat
       [ recurse2
         puzzle
-        (filterPositions positions moves)
-        (filterBones bones moves)
-        intermediateSolution
-      | intermediateSolution <- [applyMove solution move | move <- moves]
+        (filterPositions positions move)
+        (filterBones bones move)
+        (applyMove solution move)
+      | move <- moves
       ]
   where
-    valid = isValid positions bones solution
     moves = findMoves puzzle positions bones
 
 findMoves ::
@@ -230,13 +220,9 @@ applyMove :: Solution -> Move -> Solution
 applyMove solution (position1, position2, boneNumber) =
   updateList solution [position1, position2] boneNumber
 
-filterPositions :: [Position] -> [Move] -> [Position]
-filterPositions positions [(position1, position2, _)] =
+filterPositions :: [Position] -> Move -> [Position]
+filterPositions positions (position1, position2, _) =
   filter (\p -> p `notElem` [position1, position2]) positions
-filterPositions positions moves =
-  [position | move <- moves, position <- filterPositions positions [move]]
 
-filterBones :: [Bone] -> [Move] -> [Bone]
-filterBones bones [(_, _, boneNumber)] =
-  filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
-filterBones bones moves = [bone | move <- moves, bone <- filterBones bones moves]
+filterBones :: [Bone] -> Move -> [Bone]
+filterBones bones (_, _, boneNumber) = filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
