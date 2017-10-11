@@ -1,24 +1,33 @@
+-- | Puzzles for the domino effect challenge
 module Puzzles where
 
+-- | Dots or points on a domino stone, a.k.a. bone
 type Pips = Int
 
+-- | A 'Puzzle' consists of a list of 'Pips', on which bones are to be placed
 type Puzzle = [Pips]
 
+-- | For when @maxPips == 0@
 input0 :: Puzzle
 input0 = [0, 0]
 
+-- | For when @maxPips == 1@
 input1 :: Puzzle
 input1 = [0, 0, 0, 1, 1, 1]
 
+-- | For when @maxPips == 2@
 input2 :: Puzzle
 input2 = [2, 1, 0, 1, 2, 0, 2, 1, 2, 0, 0, 1]
 
+-- | For when @maxPips == 3@
 input3 :: Puzzle
 input3 = [2, 0, 0, 3, 1, 2, 3, 1, 3, 0, 2, 1, 0, 3, 2, 0, 2, 3, 1, 1]
 
+-- | For when @maxPips == 4@
 input4 :: Puzzle
 input4 = [3, 3, 1, 3, 2, 2, 3, 2, 0, 4, 2, 2, 4, 4, 1, 1, 1, 3, 4, 4, 1, 0, 0, 0, 4, 3, 2, 0, 0, 1]
 
+-- | For when @maxPips == 5@
 input5 :: Puzzle
 input5 =
   [ 3
@@ -65,6 +74,7 @@ input5 =
   , 5
   ]
 
+-- | For when @maxPips == 6@
 input6 :: Puzzle
 input6 =
   [ 3
@@ -129,6 +139,7 @@ input6 =
 inputs :: [Puzzle]
 inputs = [input0, input1, input2, input3, input4, input5, input6]
 
+-- | Assignment 'Puzzle' 1
 assignment1 :: Puzzle
 assignment1 =
   [ 6
@@ -189,6 +200,7 @@ assignment1 =
   , 3
   ]
 
+-- | Assignment 'Puzzle' 2
 assignment2 :: Puzzle
 assignment2 =
   [ 5
@@ -249,6 +261,7 @@ assignment2 =
   , 1
   ]
 
+-- | Assignment 'Puzzle' 3
 assignment3 :: Puzzle
 assignment3 =
   [ 4

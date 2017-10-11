@@ -1,171 +1,222 @@
+-- | Functions to solve the Domino Effect challenge
 module DominoEffect where
 
-import           Data.Char
-import           System.Console.ANSI (clearScreen)
-import           System.Random
+import           Puzzles
 
+-- | A @(row, column, index)@ triplet, all starting from 0. Top left is @(0, 0, 0)@, bottom right
+--  for @maxPips == 6@ is @(6, 7, 55)@
+type Position = (Int, Int, Int)
+
+-- | A 'Bone' has two parts with 'Pips'
+type BonePips = (Pips, Pips)
+
+-- | Every 'Bone' is uniquely numbered
 type BoneNumber = Int
 
-type BonePips = (Int, Int)
+-- | A 'Bone' is another word for domino piece / stone / unit / thingy
+type Bone = (BonePips, BoneNumber)
 
-type Bone = (BoneNumber, BonePips)
+-- | A 'Solution' is a list of 'BoneNumber' corresponding to the 'Bone' of which the 'Pips' match
+--   that particular 'Position' in the 'Puzzle'
+type Solution = [BoneNumber]
 
-type CartesianIndex = (Int, Int)
+-- | A 'Move' as determined in the algorithm, consisting of the 'BoneNumber' to be put on two
+--   'Position's
+type Move = (Position, Position, BoneNumber)
 
-type LinearIndex = Int
+-- | In-module script, for which @maxPips@ should be set
+dominoEffect :: IO ()
+dominoEffect = funDominoEffect maxPips
 
--- | Puzzle contents to be printed on the TUI
-data Printable
-  = Figure Int
-  | Domino Bone
-  | Empty
-  deriving (Eq)
-
-instance Show Printable where
-  show (Figure n)                      = show n
-  show (Domino (bone, (pips1, pips2))) = show (bone, (pips1, pips2))
-  show Empty                           = " . "
-
-type Puzzle = [Printable]
-
-data Direction
-  = RIGHT
-  | DOWN
-  deriving (Show)
-
--- | Solve the Domino Effect puzzle
-dominoEffect ::
-     Int -- ^ The maximum number of pips on a bone
-  -> IO ()
-dominoEffect maxPips = do
-  clearScreen
-  putWelcome
-  putStrLn ("\nUsing up to " ++ show maxPips ++ " pips.")
-  putStrLn $ "The initial set of dominoes consists of " ++ show (numBones maxPips) ++ " bones."
-  let input = generateInput maxPips
-  putStrLn "\nPuzzle to solve:"
-  putPuzzle input
-  putStr "\nSolving... "
-  let solutions = solve input
-  let numSolutions = length solutions
-  putStrLn $
-    (case numSolutions of
-       0 -> "No solutions were"
-       1 -> "One solution was"
-       _ -> show numSolutions ++ " solutions were") ++
-    " found."
+-- | Function to solve the Domino Effect challenge
+funDominoEffect :: Int -> IO ()
+funDominoEffect maxPips = do
+  putStrLn "Domino Effect"
+  putStrLn ""
+  --
+  let bones = funInitialBones maxPips
+  putStrLn "Bones:"
+  print bones
+  putStrLn ""
+  --
+  putStrLn "Puzzle:"
+  let puzzle = inputs !! maxPips
+  print puzzle
+  putStrLn ""
+  --
+  putStr "Solving... "
+  let solutions = solve puzzle (funInitialPositions maxPips) bones (funInitialSolution maxPips)
+  putStrLn (show (length solutions) ++ " solutuions found! (^_^ )")
+  --
+  putStrLn ""
+  putStrLn "Solutions:"
+  print solutions
   return ()
 
-putWelcome :: IO ()
-putWelcome =
-  putStr
-    ("        D O M I N O\n" ++
-     " ___                    ___\n" ++
-     "|o o|   E F F E C T    |o o|\n" ++
-     "|o_o| ___ ___  ___ ___ |o_o|\n" ++
-     "|o  ||o  |ooo||ooo|o o||o o|\n" ++ "|__o||__o|ooo||ooo|o_o||o_o|\n")
+-- | The maximum number of 'Pips' on a 'Bone'
+maxPips :: Int
+maxPips = 0
 
--- | Solve a given puzzle by finding all solutions
-solve ::
-     Puzzle -- ^ Input, i.e. 'Puzzle' to solve
-  -> [Puzzle] -- ^ Output, i.e. list of solutions
-solve puzzle = [[]]
+-- | The initial set of 'Bone's to solve the puzzle with
+initialBones :: [Bone]
+initialBones = funInitialBones maxPips
 
--- | Draw the puzzle to STDOUT
-putPuzzle :: Puzzle -> IO ()
-putPuzzle [] = return ()
-putPuzzle [printable] = print printable
-putPuzzle (printable:printables) = do
-  putStr $ show printable
-  putPuzzle printables
-  return ()
+-- | Function to generate the initial set of 'Bone's, depending on the maximum number of 'Pips'
+--   on a 'Bone'
+funInitialBones :: Int -> [Bone]
+funInitialBones maxPips =
+  zip
+    [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]]
+    [defaultBoneNumber + 1 ..]
 
--- | The number of bones to be placed in the puzzle
-numBones ::
-     Int -- ^ The maximum number of pips on a bone
-  -> Int
-numBones maxPips = sum [1 .. maxPips + 1]
+-- | The initial set of positions in the puzzle, on which bones have to be placed
+initialPositions :: [Position]
+initialPositions = funInitialPositions maxPips
 
--- | Cartesian dimensions of the puzzle
-puzzleDimensions ::
-     Int -- ^ The maximum number of pips on a bone
-  -> (Int, Int)
-puzzleDimensions maxPips = (maxPips + 1, maxPips + 2)
+-- | Function to generate the initial set of positions, depending on the maximum number of pips
+--   on a bone
+funInitialPositions :: Int -> [Position]
+funInitialPositions maxPips =
+  let maxColumn = funMaxColumn maxPips
+  in [ (row, column, index)
+     | row <- [0 .. funMaxRow maxPips]
+     , column <- [0 .. maxColumn]
+     , let index = column + row + row * maxColumn
+     ]
 
--- | Calculate the maximum linear index
-maxLinearIndex ::
-     Int -- ^ The maximum number of pips on a bone
-  -> LinearIndex
-maxLinearIndex maxPips = tupleProduct (puzzleDimensions maxPips) - 1
+-- | The initial solution, consisting entirely of non-existent bone numbers
+initialSolution :: Solution
+initialSolution = funInitialSolution maxPips
 
--- | Linear puzzle indices, starting from 0 from top left along the rows to bottom right
-linearIndices ::
-     Int -- ^ The maximum number of pips on a bone
-  -> [LinearIndex]
-linearIndices maxPips = [0 .. maxLinearIndex maxPips]
+-- | Function to generate the initial solution, depending on the maximum number of pips on a bone
+funInitialSolution :: Int -> Solution
+funInitialSolution maxPips = replicate (2 * funNumBones maxPips) defaultBoneNumber
 
---linearToCartesian :: LinearIndex -> CartesianIndex
---linearToCartesian i =
--- | Product of 'Num' tuple
-tupleProduct :: Num a => (a, a) -> a
-tupleProduct = uncurry (*)
+-- | The default bone number, used by no bone in the initial set
+defaultBoneNumber :: BoneNumber
+defaultBoneNumber = 0
 
--- | Sum of a 'Num' tuple
-tupleSum :: Num a => (a, a) -> a
-tupleSum = uncurry (+)
+-- | The maximum row index
+maxRow :: Int
+maxRow = funMaxRow maxPips
 
--- | Generate the list of bones at the start of the puzzle
-generateBones ::
-     Int -- ^ The maximum number of pips on a bone
-  -> [Bone]
-generateBones maxPips = zip [1 ..] $ generateBonePips maxPips
+-- | Function to calculate the maximum row index, depending on the maximum number of pips on a bone
+funMaxRow :: Int -> Int
+funMaxRow maxPips = maxPips
 
--- | Generate pips on initial set of bones
-generateBonePips ::
-     Int -- ^ The maximum number of pips on a bone
-  -> [BonePips]
-generateBonePips maxPips = [(pips1, pips2) | pips1 <- [0 .. maxPips], pips2 <- [pips1 .. maxPips]]
+-- | The maximum column index
+maxColumn :: Int
+maxColumn = funMaxColumn maxPips
 
--- | Generate a solvable input for the puzzle
-generateInput ::
-     Int -- ^ The maximum number of pips on a bone
-  -> Puzzle
-generateInput maxPips = generateInput' n $ replicate n Empty
-  where
-    n = numBones maxPips
+-- | Function to calculate the maximum column index, depending on the maximum number of pips on a
+--   bone
+funMaxColumn :: Int -> Int
+funMaxColumn maxPips = funMaxRow maxPips + 1
 
-generateInput' :: Int -> Puzzle -> Puzzle
-generateInput' 0 puzzle = puzzle
-generateInput' n puzzle = []
+-- | The number of bones in the initial set
+numBones :: Int
+numBones = funNumBones maxPips
 
-generatePipsPlacedAt ::
-     Puzzle -- ^ The 'Puzzle' to generate pips on
-  -> LinearIndex -- ^ 'LinearIndex' of an 'Empty' element in the specified 'Puzzle'
-  -> Puzzle -- ^ The 'Puzzle' with pips placed on the specified position
-generatePipsPlacedAt puzzle i = []
+-- | Function to calculate the number of bones in the initial set, depending on the maximum number
+--   of pips on a bone
+funNumBones :: Int -> Int
+funNumBones maxPips = sum [1 .. maxPips + 1]
 
--- | Find first index of an element known to exist
-findFirstIndex :: Eq a => a -> [a] -> LinearIndex
-findFirstIndex _ [y] = 0 -- | Since we know the element exists, the last recursion must be a hit
-findFirstIndex x (y:ys)
-  | x == y = 0
-  | otherwise = 1 + findFirstIndex x ys
+-- | The recursive algorithm to solve the Domino Effect challenge
+solve :: Puzzle -> [Position] -> [Bone] -> Solution -> [Solution]
+solve puzzle positions bones solution
+  | isSolved solution = [solution]
+  | not $ okToContinue positions bones = []
+  | otherwise =
+    concat
+      [ solve
+        puzzle
+        (filterPositions positions move)
+        (filterBones bones move)
+        (applyMove solution move)
+      | move <- findMoves puzzle positions bones
+      ]
 
--- | Determine if puzzle field is full, i.e., if all bones have been placed
-isFull :: Puzzle -> Bool
-isFull []                = True
-isFull (Domino _:fields) = isFull fields
-isFull _                 = False
+-- | Check if a solution solves a puzzle
+isSolved :: Solution -> Bool
+isSolved = notElem defaultBoneNumber
 
--- | Get a random 'IO a' from a range
-randomFromRange :: Random a => (a, a) -> IO a
-randomFromRange range = getStdRandom (randomR range)
+-- | Check if continuing is possible with the given positions and bones
+okToContinue :: [Position] -> [Bone] -> Bool
+okToContinue [] _ = False
+okToContinue _ [] = False
+okToContinue _ _  = True
 
--- | Get a random 'Direction'
-randomDirection :: IO Direction
-randomDirection = do
-  r <- randomRIO (0, 1) :: IO Integer
-  return
-    (case r of
-       0 -> RIGHT
-       _ -> DOWN)
+-- | Remove positions on which a move has been played
+filterPositions :: [Position] -> Move -> [Position]
+filterPositions positions (position1, position2, _) =
+  filter (\p -> p `notElem` [position1, position2]) positions
+
+-- | Remove bones that have been played
+filterBones :: [Bone] -> Move -> [Bone]
+filterBones bones (_, _, boneNumber) = filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
+
+-- | Store a move in the intermediate solution by updating it
+applyMove :: Solution -> Move -> Solution
+applyMove solution (position1, position2, boneNumber) =
+  updateList solution [position1, position2] boneNumber
+
+-- | Update a list at the specified positions with the specified value
+updateList ::
+     [a] -- ^ Current list
+  -> [Position] -- ^ Positions to update
+  -> a -- ^ Value to put at the specified positions
+  -> [a] -- ^ Resulting list
+updateList xs [] _ = xs
+updateList xs ((_, _, index):positions) value =
+  updateList (take index xs ++ [value] ++ drop (index + 1) xs) positions value
+
+-- | Find the moves that place one bone
+findMoves ::
+     Puzzle -- ^ 'Puzzle' to solve
+  -> [Position] -- ^ Available positions, the head being the one being currently solved
+  -> [Bone] -- ^ Available bones
+  -> [Move] -- ^ Valid positions and bone numbers
+findMoves puzzle (position:positions) bones =
+  [ (position, neighbourPosition, boneNumber)
+  | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `get` position) bones
+  , neighbourPosition <- neighboursInSet position positions
+  , let neighbourPips = head $ get puzzle neighbourPosition
+  , bonePips2 == neighbourPips
+  ]
+
+-- | Find boned containing the specified pips
+bonesWithPips ::
+     Pips -- ^ 'Pips' to find on bones
+  -> [Bone] -- ^ Available bones
+  -> [Bone] -- ^ 'Bone' matches, with the matched pips first in the pips tuple
+bonesWithPips pips bones =
+  [ ((pips3, pips4), num)
+  | ((pips1, pips2), num) <- bones
+  , pipsOnBone pips ((pips1, pips2), num)
+  -- Ensure the matched pips are always first in the tuple
+  , let pips3 = pips
+  , let pips4 =
+          if pips == pips1
+            then pips2
+            else pips1
+  ]
+
+-- | Get the element at the specified position, or empty if out of bounds
+get :: [a] -> Position -> [a]
+get xs (_, _, index) = take 1 $ drop index xs
+
+-- | Get the east (right) and south (down) neighbours of the specified position from the specified
+--   set of positions
+neighboursInSet :: Position -> [Position] -> [Position]
+neighboursInSet (row, column, _) positions =
+  [ (row', column', index)
+  | (row', column') <- [(row, column + 1), (row + 1, column)]
+  , (row'', column'', index) <- positions -- Get index from available positions
+  , row' == row''
+  , column' == column''
+  ]
+
+-- | Check if the specified pips are on a bone
+pipsOnBone :: Pips -> Bone -> Bool
+pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
