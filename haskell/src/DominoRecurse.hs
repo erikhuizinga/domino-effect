@@ -60,5 +60,34 @@ recurse ::
   -> [Bone] -- ^ Set of available bones
   -> [[Int]] -- ^ Current solutions
   -> [[Int]] -- ^ Solutions
-recurse _ [] [] solutions                 = solutions
-recurse (n:ns) (pos:poss) bones solutions = []
+recurse _ [] [] solutions = solutions -- All bones have been positioned
+recurse _ [] _ _ = [] -- No more available positions
+recurse _ _ [] _ = [] -- No more available bones
+recurse (pips:pipss) (pos:poss) bones (sol:sols) =
+  let pipBones = bonesWithPips pips bones
+      neighbours = neighboursInSet pos poss
+  in []
+
+bonesWithPips ::
+     Int -- ^ 'Pips' to find
+  -> [Bone] -- ^ Available 'Bone' instances
+  -> [Bone]
+bonesWithPips pips bones =
+  [ ((pips3, pips4), num)
+  | ((pips1, pips2), num) <- bones
+  , pipsOnBone pips ((pips1, pips2), num)
+  , let pips3 = pips
+  , let pips4 =
+          if pips == pips1
+            then pips2
+            else pips1
+  ]
+
+pipsOnBone :: Int -> Bone -> Bool
+pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
+
+{-| Get the east (right) and south (down) neighbours of the specified position from the specified
+    set of positions
+-}
+neighboursInSet :: Position -> [Position] -> [Position]
+neighboursInSet (r, c) poss = [pos | pos <- [(r + 1, c), (r, c + 1)], pos `elem` poss]
