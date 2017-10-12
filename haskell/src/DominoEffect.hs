@@ -1,7 +1,10 @@
 -- | Functions to solve the Domino Effect challenge
 module DominoEffect where
 
+import           Data.List
 import           Puzzles
+import           System.Random
+import           System.Random.Shuffle
 
 -- | A @(row, column, index)@ triplet, all starting from 0. Top left is @(0, 0, 0)@, bottom right
 --  for @maxPips == 6@ is @(6, 7, 55)@
@@ -20,17 +23,24 @@ type Bone = (BonePips, BoneNumber)
 --   that particular 'Position' in the 'Puzzle'
 type Solution = [BoneNumber]
 
--- | A 'Move' as determined in the algorithm, consisting of the 'BoneNumber' to be put on two
---   'Position's
-type Move = (Position, Position, BoneNumber)
+-- | A 'Move' as determined in the algorithm, consisting of to values to be put on two 'Position's
+type Move a = (Position, Position, a, a)
+
+-- | Default Domino function with randomness
+dominoEffect :: Int -> IO ()
+dominoEffect maxPips = do
+  puzzle <- generatePuzzle maxPips
+  funDominoEffect puzzle
 
 -- | In-module script, for which @maxPips@ should be set
-dominoEffect :: IO ()
-dominoEffect = funDominoEffect maxPips
+scriptDominoEffect :: IO ()
+scriptDominoEffect = funDominoEffect (inputs !! maxPips)
 
 -- | Function to solve the Domino Effect challenge
-funDominoEffect :: Int -> IO ()
-funDominoEffect maxPips = do
+funDominoEffect :: Puzzle -> IO ()
+funDominoEffect puzzle = do
+  let maxPips = maximum puzzle
+  --
   putStrLn "Domino Effect"
   putStrLn ""
   --
@@ -40,7 +50,6 @@ funDominoEffect maxPips = do
   putStrLn ""
   --
   putStrLn "Puzzle:"
-  let puzzle = inputs !! maxPips
   print puzzle
   putStrLn ""
   --
@@ -51,7 +60,6 @@ funDominoEffect maxPips = do
   putStrLn ""
   putStrLn "Solutions:"
   print solutions
-  return ()
 
 -- | The maximum number of 'Pips' on a 'Bone'
 maxPips :: Int
@@ -150,18 +158,19 @@ okToContinue _ [] = False
 okToContinue _ _  = True
 
 -- | Remove 'Position's on which a 'Move' has been applied
-filterPositions :: [Position] -> Move -> [Position]
-filterPositions positions (position1, position2, _) =
+filterPositions :: [Position] -> Move a -> [Position]
+filterPositions positions (position1, position2, _, _) =
   filter (\p -> p `notElem` [position1, position2]) positions
 
 -- | Remove 'Bone's that have been used
-filterBones :: [Bone] -> Move -> [Bone]
-filterBones bones (_, _, boneNumber) = filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
+filterBones :: [Bone] -> Move Int -> [Bone]
+filterBones bones (_, _, boneNumber, _) =
+  filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
 
--- | Store a 'Move' in the intermediate 'Solution' by updating it
-applyMove :: Solution -> Move -> Solution
-applyMove solution (position1, position2, boneNumber) =
-  updateList solution [position1, position2] boneNumber
+-- | Store a 'Move' in a list by updating it with the move's value
+applyMove :: [a] -> Move a -> [a]
+applyMove xs (position1, position2, x1, x2) =
+  updateList (updateList xs [position1] x1) [position2] x2
 
 -- | Update a list at the specified 'Position's with the specified value
 updateList ::
@@ -178,9 +187,9 @@ findMoves ::
      Puzzle -- ^ 'Puzzle' to solve
   -> [Position] -- ^ Available positions, the head being the one being currently solved
   -> [Bone] -- ^ Available bones
-  -> [Move] -- ^ Valid positions and bone numbers
+  -> [Move Int] -- ^ Valid positions and bone numbers
 findMoves puzzle (position:positions) bones =
-  [ (position, neighbourPosition, boneNumber)
+  [ (position, neighbourPosition, boneNumber, boneNumber)
   | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `get` position) bones
   , neighbourPosition <- neighboursInSet position positions
   , let neighbourPips = head $ get puzzle neighbourPosition
@@ -222,3 +231,38 @@ neighboursInSet (row, column, _) positions =
 -- | Check if the specified 'Pips' are on a 'Bone'
 pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
+
+---- | Generate a solvable 'Puzzle'
+--generatePuzzle :: Int -> IO Puzzle
+--generatePuzzle maxPips = do
+--  let bones = funInitialBones maxPips
+--  let nBones = length bones
+--  gen <- getStdGen
+--  let bones = shuffle' bones nBones gen
+--  let initialPuzzle = replicate (2 * nBones) defaultBoneNumber
+--  let positions = funInitialPositions maxPips
+--  let seed = random gen :: (Int, StdGen)
+--  generatePuzzle' initialPuzzle positions bones maxPips
+--
+--generatePuzzle' :: Puzzle -> [Position] -> [Bone] -> Int -> IO Puzzle
+--generatePuzzle' puzzle [] _ _ = return puzzle
+--generatePuzzle' puzzle (position:positions) (((pips1, pips2), _):bones) maxPips = do
+--  let neighbourPositions = neighboursInSet position positions
+--  let numNeighbours = length neighbourPositions
+--  if numNeighbours == 0
+--    then do
+--      putStrLn "[generatePuzzle] Regenerating solvable puzzle..."
+--      generatePuzzle maxPips
+--    else do
+--      position2 <-
+--        if numNeighbours == 1
+--          then return (head neighbourPositions)
+--          else do
+--            direction <- randomRIO (0, 1) :: IO Int
+--            return (positions !! direction)
+--      let move = (position, position2, pips1, pips2)
+--      generatePuzzle' (applyMove puzzle move) (filterPositions positions move) bones maxPips
+generatePuzzle :: Int -> IO Puzzle
+generatePuzzle maxPips = do
+  gen <- getStdGen
+  return (shuffle' (inputs !! maxPips) (2 * funNumBones maxPips) gen)
