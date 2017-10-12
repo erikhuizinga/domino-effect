@@ -20,5 +20,6 @@ executable domino-effect
   build-depends:       base >= 4.7 && < 5
                      , ansi-terminal
                      , random
+                     , random-shuffle
   other-modules:       DominoEffect
                      , Puzzles

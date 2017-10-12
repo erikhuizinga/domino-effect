@@ -1,7 +1,11 @@
 -- | Functions to solve the Domino Effect challenge
 module DominoEffect where
 
+import           Control.Monad
+import           Data.List
 import           Puzzles
+import           System.Random
+import           System.Random.Shuffle
 
 -- | A @(row, column, index)@ triplet, all starting from 0. Top left is @(0, 0, 0)@, bottom right
 --  for @maxPips == 6@ is @(6, 7, 55)@
@@ -20,42 +24,51 @@ type Bone = (BonePips, BoneNumber)
 --   that particular 'Position' in the 'Puzzle'
 type Solution = [BoneNumber]
 
--- | A 'Move' as determined in the algorithm, consisting of the 'BoneNumber' to be put on two
---   'Position's
-type Move = (Position, Position, BoneNumber)
+-- | A 'Move' as determined in the algorithm, consisting of to values to be put on two 'Position's
+type Move a = (Position, Position, a, a)
+
+-- | Default Domino function with randomness
+dominoEffect :: Int -> IO ()
+dominoEffect maxPips = do
+  puzzle <- generatePuzzle maxPips
+  funDominoEffect puzzle maxPips
 
 -- | In-module script, for which @maxPips@ should be set
-dominoEffect :: IO ()
-dominoEffect = funDominoEffect maxPips
+scriptDominoEffect :: IO ()
+scriptDominoEffect = funDominoEffect (inputs !! maxPips) maxPips
 
 -- | Function to solve the Domino Effect challenge
-funDominoEffect :: Int -> IO ()
-funDominoEffect maxPips = do
+funDominoEffect :: Puzzle -> Int -> IO ()
+funDominoEffect puzzle maxPips = do
   putStrLn "Domino Effect"
   putStrLn ""
   --
   let bones = funInitialBones maxPips
   putStrLn "Bones:"
-  print bones
+  printBones bones maxPips
   putStrLn ""
   --
   putStrLn "Puzzle:"
-  let puzzle = inputs !! maxPips
-  print puzzle
+  printGrid puzzle maxPips
   putStrLn ""
   --
   putStr "Solving... "
   let solutions = solve puzzle (funInitialPositions maxPips) bones (funInitialSolution maxPips)
   putStrLn (show (length solutions) ++ " solutuions found! (^_^ )")
   --
-  putStrLn ""
-  putStrLn "Solutions:"
-  print solutions
-  return ()
+  unless
+    (null solutions)
+    (do putStrLn ""
+        putStrLn "Solutions:"
+        sequence_
+          [ do printGrid solution maxPips
+               putStrLn ""
+          | solution <- solutions
+          ])
 
 -- | The maximum number of 'Pips' on a 'Bone'
 maxPips :: Int
-maxPips = 0
+maxPips = 6
 
 -- | The initial set of 'Bone's to solve the puzzle with
 initialBones :: [Bone]
@@ -150,18 +163,19 @@ okToContinue _ [] = False
 okToContinue _ _  = True
 
 -- | Remove 'Position's on which a 'Move' has been applied
-filterPositions :: [Position] -> Move -> [Position]
-filterPositions positions (position1, position2, _) =
+filterPositions :: [Position] -> Move a -> [Position]
+filterPositions positions (position1, position2, _, _) =
   filter (\p -> p `notElem` [position1, position2]) positions
 
 -- | Remove 'Bone's that have been used
-filterBones :: [Bone] -> Move -> [Bone]
-filterBones bones (_, _, boneNumber) = filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
+filterBones :: [Bone] -> Move Int -> [Bone]
+filterBones bones (_, _, boneNumber, _) =
+  filter (\(_, boneNumber') -> boneNumber /= boneNumber') bones
 
--- | Store a 'Move' in the intermediate 'Solution' by updating it
-applyMove :: Solution -> Move -> Solution
-applyMove solution (position1, position2, boneNumber) =
-  updateList solution [position1, position2] boneNumber
+-- | Store a 'Move' in a list by updating it with the move's value
+applyMove :: [a] -> Move a -> [a]
+applyMove xs (position1, position2, x1, x2) =
+  updateList (updateList xs [position1] x1) [position2] x2
 
 -- | Update a list at the specified 'Position's with the specified value
 updateList ::
@@ -178,9 +192,9 @@ findMoves ::
      Puzzle -- ^ 'Puzzle' to solve
   -> [Position] -- ^ Available positions, the head being the one being currently solved
   -> [Bone] -- ^ Available bones
-  -> [Move] -- ^ Valid positions and bone numbers
+  -> [Move Int] -- ^ Valid positions and bone numbers
 findMoves puzzle (position:positions) bones =
-  [ (position, neighbourPosition, boneNumber)
+  [ (position, neighbourPosition, boneNumber, boneNumber)
   | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `get` position) bones
   , neighbourPosition <- neighboursInSet position positions
   , let neighbourPips = head $ get puzzle neighbourPosition
@@ -222,3 +236,41 @@ neighboursInSet (row, column, _) positions =
 -- | Check if the specified 'Pips' are on a 'Bone'
 pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
+
+-- | Generate a random 'Puzzle' thay may or may not be solvable
+generatePuzzle :: Int -> IO Puzzle
+generatePuzzle maxPips = do
+  gen <- getStdGen
+  return (shuffle' (inputs !! maxPips) (2 * funNumBones maxPips) gen)
+
+printBones :: [Bone] -> Int -> IO ()
+-- printBones = mapM_ print
+printBones bones maxPips =
+  sequence_
+    [ putStrLn ("#" ++ pad maxPips (show number) ++ show pips1 ++ "|" ++ show pips2)
+    | ((pips1, pips2), number) <- bones
+    ]
+
+-- | Pretty print a grid, e.g. @printGrid [1..2*funNumBones 10] 10@
+printGrid :: Show a => [a] -> Int -> IO ()
+printGrid grid maxPips =
+  sequence_ [putStrLn $ showRow maxPips row | row <- grid `chop` (funMaxColumn maxPips + 1)]
+
+-- | Pretty print a list
+showRow :: Show a => Int -> [a] -> String
+--showRow maxPips = foldr ((++) . padShow maxPips) ""
+showRow _ []           = ""
+showRow maxPips (s:ss) = pad maxPips (show s) ++ showRow maxPips ss
+
+-- | Chop a list into lists of up to the specified length
+chop :: [a] -> Int -> [[a]]
+chop [] _ = []
+chop xs n = take n xs : chop (drop n xs) n
+
+-- | Calculate the final length of the 'String' for each grid element
+printLength :: Integral a => Int -> a
+printLength = (+ 2) . truncate . logBase 10 . fromIntegral . (* 2) . funNumBones
+
+-- | Pad a 'String' by appending spaces up to a uniform length based on @maxPips@
+pad :: Int -> String -> String
+pad maxPips showable = showable ++ replicate (printLength maxPips - length showable) ' '

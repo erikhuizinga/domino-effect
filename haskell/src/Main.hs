@@ -7,7 +7,6 @@ import           DominoEffect
 main :: IO ()
 main = do
   let maxPips = 6
---  dominoEffect maxPips
---  dominoTree
-  funDominoEffect maxPips
+  --  funDominoEffect maxPips
+  dominoEffect maxPips
   return ()
