@@ -31,17 +31,15 @@ type Move a = (Position, Position, a, a)
 dominoEffect :: Int -> IO ()
 dominoEffect maxPips = do
   puzzle <- generatePuzzle maxPips
-  funDominoEffect puzzle
+  funDominoEffect puzzle maxPips
 
 -- | In-module script, for which @maxPips@ should be set
 scriptDominoEffect :: IO ()
-scriptDominoEffect = funDominoEffect (inputs !! maxPips)
+scriptDominoEffect = funDominoEffect (inputs !! maxPips) maxPips
 
 -- | Function to solve the Domino Effect challenge
-funDominoEffect :: Puzzle -> IO ()
-funDominoEffect puzzle = do
-  let maxPips = maximum puzzle
-  --
+funDominoEffect :: Puzzle -> Int -> IO ()
+funDominoEffect puzzle maxPips = do
   putStrLn "Domino Effect"
   putStrLn ""
   --
@@ -70,7 +68,7 @@ funDominoEffect puzzle = do
 
 -- | The maximum number of 'Pips' on a 'Bone'
 maxPips :: Int
-maxPips = 0
+maxPips = 6
 
 -- | The initial set of 'Bone's to solve the puzzle with
 initialBones :: [Bone]
@@ -239,36 +237,7 @@ neighboursInSet (row, column, _) positions =
 pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
 
----- | Generate a solvable 'Puzzle'
---generatePuzzle :: Int -> IO Puzzle
---generatePuzzle maxPips = do
---  let bones = funInitialBones maxPips
---  let nBones = length bones
---  gen <- getStdGen
---  let bones = shuffle' bones nBones gen
---  let initialPuzzle = replicate (2 * nBones) defaultBoneNumber
---  let positions = funInitialPositions maxPips
---  let seed = random gen :: (Int, StdGen)
---  generatePuzzle' initialPuzzle positions bones maxPips
---
---generatePuzzle' :: Puzzle -> [Position] -> [Bone] -> Int -> IO Puzzle
---generatePuzzle' puzzle [] _ _ = return puzzle
---generatePuzzle' puzzle (position:positions) (((pips1, pips2), _):bones) maxPips = do
---  let neighbourPositions = neighboursInSet position positions
---  let numNeighbours = length neighbourPositions
---  if numNeighbours == 0
---    then do
---      putStrLn "[generatePuzzle] Regenerating solvable puzzle..."
---      generatePuzzle maxPips
---    else do
---      position2 <-
---        if numNeighbours == 1
---          then return (head neighbourPositions)
---          else do
---            direction <- randomRIO (0, 1) :: IO Int
---            return (positions !! direction)
---      let move = (position, position2, pips1, pips2)
---      generatePuzzle' (applyMove puzzle move) (filterPositions positions move) bones maxPips
+-- | Generate a random 'Puzzle' thay may or may not be solvable
 generatePuzzle :: Int -> IO Puzzle
 generatePuzzle maxPips = do
   gen <- getStdGen

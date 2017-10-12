@@ -321,3 +321,7 @@ assignment3 =
   , 5
   , 3
   ]
+
+-- | An unsolvable 'Puzzle'
+unsolvable :: Puzzle
+unsolvable = replicate 56 0
