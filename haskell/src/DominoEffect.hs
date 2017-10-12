@@ -46,11 +46,11 @@ funDominoEffect puzzle = do
   --
   let bones = funInitialBones maxPips
   putStrLn "Bones:"
-  print bones
+  printBones bones maxPips
   putStrLn ""
   --
   putStrLn "Puzzle:"
-  print puzzle
+  printGrid puzzle maxPips
   putStrLn ""
   --
   putStr "Solving... "
@@ -59,7 +59,11 @@ funDominoEffect puzzle = do
   --
   putStrLn ""
   putStrLn "Solutions:"
-  print solutions
+  sequence_
+    [ do printGrid solution maxPips
+         putStrLn ""
+    | solution <- solutions
+    ]
 
 -- | The maximum number of 'Pips' on a 'Bone'
 maxPips :: Int
@@ -266,3 +270,35 @@ generatePuzzle :: Int -> IO Puzzle
 generatePuzzle maxPips = do
   gen <- getStdGen
   return (shuffle' (inputs !! maxPips) (2 * funNumBones maxPips) gen)
+
+printBones :: [Bone] -> Int -> IO ()
+-- printBones = mapM_ print
+printBones bones maxPips =
+  sequence_
+    [ putStrLn ("#" ++ pad maxPips (show number) ++ show pips1 ++ "|" ++ show pips2)
+    | ((pips1, pips2), number) <- bones
+    ]
+
+-- | Pretty print a grid, e.g. @printGrid [1..2*funNumBones 10] 10@
+printGrid :: Show a => [a] -> Int -> IO ()
+printGrid grid maxPips =
+  sequence_ [putStrLn $ showRow maxPips row | row <- grid `chop` (funMaxColumn maxPips + 1)]
+
+-- | Pretty print a list
+showRow :: Show a => Int -> [a] -> String
+--showRow maxPips = foldr ((++) . padShow maxPips) ""
+showRow _ []           = ""
+showRow maxPips (s:ss) = pad maxPips (show s) ++ showRow maxPips ss
+
+-- | Chop a list into lists of up to the specified length
+chop :: [a] -> Int -> [[a]]
+chop [] _ = []
+chop xs n = take n xs : chop (drop n xs) n
+
+-- | Calculate the final length of the 'String' for each grid element
+printLength :: Integral a => Int -> a
+printLength = (+ 2) . truncate . logBase 10 . fromIntegral . (* 2) . funNumBones
+
+-- | Pad a 'String' by appending spaces up to a uniform length based on @maxPips@
+pad :: Int -> String -> String
+pad maxPips showable = showable ++ replicate (printLength maxPips - length showable) ' '

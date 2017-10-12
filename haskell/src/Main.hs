@@ -6,7 +6,7 @@ import           DominoEffect
 -- | Run the Domino Effect challenge
 main :: IO ()
 main = do
-  let maxPips = 3
+  let maxPips = 6
   --  funDominoEffect maxPips
   dominoEffect maxPips
   return ()
