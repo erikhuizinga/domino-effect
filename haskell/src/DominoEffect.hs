@@ -1,6 +1,7 @@
 -- | Functions to solve the Domino Effect challenge
 module DominoEffect where
 
+import           Control.Monad
 import           Data.List
 import           Puzzles
 import           System.Random
@@ -57,13 +58,15 @@ funDominoEffect puzzle = do
   let solutions = solve puzzle (funInitialPositions maxPips) bones (funInitialSolution maxPips)
   putStrLn (show (length solutions) ++ " solutuions found! (^_^ )")
   --
-  putStrLn ""
-  putStrLn "Solutions:"
-  sequence_
-    [ do printGrid solution maxPips
-         putStrLn ""
-    | solution <- solutions
-    ]
+  unless
+    (null solutions)
+    (do putStrLn ""
+        putStrLn "Solutions:"
+        sequence_
+          [ do printGrid solution maxPips
+               putStrLn ""
+          | solution <- solutions
+          ])
 
 -- | The maximum number of 'Pips' on a 'Bone'
 maxPips :: Int
