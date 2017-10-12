@@ -6,6 +6,7 @@ import           Data.List
 import           Puzzles
 import           System.Random
 import           System.Random.Shuffle
+import           Text.Read
 
 -- | A @(row, column, index)@ triplet, all starting from 0. Top left is @(0, 0, 0)@, bottom right
 --  for @maxPips == 6@ is @(6, 7, 55)@
@@ -28,10 +29,8 @@ type Solution = [BoneNumber]
 type Move a = (Position, Position, a, a)
 
 -- | Default Domino function with randomness
-dominoEffect :: Int -> IO ()
-dominoEffect maxPips = do
-  puzzle <- generatePuzzle maxPips
-  funDominoEffect puzzle
+dominoEffect :: Int -> Int -> IO ()
+dominoEffect maxPips = funDominoEffect . generatePuzzle maxPips
 
 -- | In-module script, for which @maxPips@ should be set
 scriptDominoEffect :: IO ()
@@ -197,9 +196,9 @@ findMoves ::
   -> [Move Int] -- ^ Valid positions and bone numbers
 findMoves puzzle (position:positions) bones =
   [ (position, neighbourPosition, boneNumber, boneNumber)
-  | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `get` position) bones
+  | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `getAt` position) bones
   , neighbourPosition <- neighboursInSet position positions
-  , let neighbourPips = head $ get puzzle neighbourPosition
+  , let neighbourPips = head $ getAt puzzle neighbourPosition
   , bonePips2 == neighbourPips
   ]
 
@@ -221,8 +220,8 @@ bonesWithPips pips bones =
   ]
 
 -- | Get the element at the specified 'Position', or empty if out of bounds
-get :: [a] -> Position -> [a]
-get xs (_, _, index) = take 1 $ drop index xs
+getAt :: [a] -> Position -> [a]
+getAt xs (_, _, index) = take 1 $ drop index xs
 
 -- | Get the east (right) and south (down) neighbours of the specified 'Position' from the specified
 --   set of 'Position's
@@ -239,38 +238,8 @@ neighboursInSet (row, column, _) positions =
 pipsOnBone :: Pips -> Bone -> Bool
 pipsOnBone pips ((pips1, pips2), _) = pips `elem` [pips1, pips2]
 
----- | Generate a solvable 'Puzzle'
---generatePuzzle :: Int -> IO Puzzle
---generatePuzzle maxPips = do
---  let bones = funInitialBones maxPips
---  let nBones = length bones
---  gen <- getStdGen
---  let bones = shuffle' bones nBones gen
---  let initialPuzzle = replicate (2 * nBones) defaultBoneNumber
---  let positions = funInitialPositions maxPips
---  let seed = random gen :: (Int, StdGen)
---  generatePuzzle' initialPuzzle positions bones maxPips
---
---generatePuzzle' :: Puzzle -> [Position] -> [Bone] -> Int -> IO Puzzle
---generatePuzzle' puzzle [] _ _ = return puzzle
---generatePuzzle' puzzle (position:positions) (((pips1, pips2), _):bones) maxPips = do
---  let neighbourPositions = neighboursInSet position positions
---  let numNeighbours = length neighbourPositions
---  if numNeighbours == 0
---    then do
---      putStrLn "[generatePuzzle] Regenerating solvable puzzle..."
---      generatePuzzle maxPips
---    else do
---      position2 <-
---        if numNeighbours == 1
---          then return (head neighbourPositions)
---          else do
---            direction <- randomRIO (0, 1) :: IO Int
---            return (positions !! direction)
---      let move = (position, position2, pips1, pips2)
---      generatePuzzle' (applyMove puzzle move) (filterPositions positions move) bones maxPips
-generatePuzzle :: Int -> IO Puzzle
-generatePuzzle maxPips = do
+generateRandomPuzzle :: Int -> IO Puzzle
+generateRandomPuzzle maxPips = do
   gen <- getStdGen
   return (shuffle' (inputs !! maxPips) (2 * funNumBones maxPips) gen)
 
@@ -305,3 +274,37 @@ printLength = (+ 2) . truncate . logBase 10 . fromIntegral . (* 2) . funNumBones
 -- | Pad a 'String' by appending spaces up to a uniform length based on @maxPips@
 pad :: Int -> String -> String
 pad maxPips showable = showable ++ replicate (printLength maxPips - length showable) ' '
+
+generatePuzzle :: Int -> Int -> Puzzle
+generatePuzzle maxPips seed = generatePuzzle' puzzle positions bones directions
+  where
+    nBones = length bones
+    puzzle = replicate (2 * nBones) defaultBoneNumber
+    positions = funInitialPositions maxPips
+    generator = mkStdGen seed
+    initialBones = funInitialBones maxPips
+    bones = shuffle' initialBones nBones generator
+    directions = take nBones $ randomRs (0, 1) generator
+
+generatePuzzle' :: Puzzle -> [Position] -> [Bone] -> [Int] -> Puzzle
+generatePuzzle' puzzle [] _ _ = puzzle
+generatePuzzle' puzzle (position:positions) (((pips1, pips2), _):bones) (direction:directions) =
+  generatePuzzle' (puzzle `applyMove` move) (positions `filterPositions` move) bones directions
+  where
+    move = (position, position2, pips1, pips2) -- TODO: Randomise pip order
+    position2 =
+      if length neighbourPositions == 1
+        then head neighbourPositions
+        else neighbourPositions !! direction
+    neighbourPositions = neighboursInSet position positions
+
+readInt :: String -> IO Int
+readInt prompt = do
+  putStr prompt
+  s <- getLine
+  let mx = readMaybe s :: Maybe Int
+  case mx of
+    Just x -> return x
+    Nothing -> do
+      putStrLn "ERROR: That is not a number"
+      readInt prompt
