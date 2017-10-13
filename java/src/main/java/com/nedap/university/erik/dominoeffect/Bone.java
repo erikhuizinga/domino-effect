@@ -45,6 +45,15 @@ public class Bone implements Map<Integer, Set<Integer>>, Comparable {
     return bones;
   }
 
+  public static String print(Collection<Bone> bones, int maxPips) {
+    return String.join(
+        "\n", bones.stream().map(bone -> bone.print(maxPips)).collect(Collectors.toList()));
+  }
+
+  public String print(int maxPips) {
+    return "#" + Tools.pad(boneNumber, maxPips) + pips0 + "|" + pips1;
+  }
+
   @Override
   public int compareTo(Object obj) {
     if (obj instanceof Bone) {
