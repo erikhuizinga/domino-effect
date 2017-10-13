@@ -59,6 +59,42 @@ class BoneTest {
   }
 
   @Test
+  void print() {
+    int maxPips = 6;
+    Set<Bone> bones = Bone.initialSetOf(maxPips);
+    assertEquals(
+        "#1  0|0\n"
+            + "#2  0|1\n"
+            + "#3  0|2\n"
+            + "#4  0|3\n"
+            + "#5  0|4\n"
+            + "#6  0|5\n"
+            + "#7  0|6\n"
+            + "#8  1|1\n"
+            + "#9  1|2\n"
+            + "#10 1|3\n"
+            + "#11 1|4\n"
+            + "#12 1|5\n"
+            + "#13 1|6\n"
+            + "#14 2|2\n"
+            + "#15 2|3\n"
+            + "#16 2|4\n"
+            + "#17 2|5\n"
+            + "#18 2|6\n"
+            + "#19 3|3\n"
+            + "#20 3|4\n"
+            + "#21 3|5\n"
+            + "#22 3|6\n"
+            + "#23 4|4\n"
+            + "#24 4|5\n"
+            + "#25 4|6\n"
+            + "#26 5|5\n"
+            + "#27 5|6\n"
+            + "#28 6|6",
+        Bone.print(bones, maxPips));
+  }
+
+  @Test
   void compareTo() {
     assertTrue(bone1.compareTo(bone2) < 0);
     assertTrue(bone2.compareTo(bone2) == 0);
