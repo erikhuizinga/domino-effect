@@ -1,5 +1,6 @@
 package com.nedap.university.erik.dominoeffect;
 
+import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
 import static com.nedap.university.erik.dominoeffect.TestData.maxPips;
 import static com.nedap.university.erik.dominoeffect.TestData.positions;
 import static com.nedap.university.erik.dominoeffect.TestData.puzzle;
@@ -7,7 +8,9 @@ import static com.nedap.university.erik.dominoeffect.TestData.values;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.nedap.university.erik.dominoeffect.Puzzles.Assignment1;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,9 @@ class PuzzleTest {
     Collection<Integer> puzzleValues = puzzle.values();
     assertTrue(puzzleValues.containsAll(values));
     assertTrue(values.containsAll(puzzleValues));
+    assertEquals(
+        NO_PIPS, new Puzzle(Collections.emptyList(), Collections.emptyList()).getMaxPips());
+    assertEquals(6, new Assignment1().getMaxPips());
   }
 
   @Test

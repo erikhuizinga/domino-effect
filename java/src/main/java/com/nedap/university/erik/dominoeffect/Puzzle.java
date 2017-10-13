@@ -9,9 +9,12 @@ import java.util.stream.Collectors;
 
 /** Created by erik.huizinga on 13-10-17 */
 public class Puzzle extends TreeMap<Position, Integer> {
+
+  public static final int NO_PIPS = -1;
   private final int maxColumnIndex;
   private final int maxRowIndex;
   private final int maxIndex;
+  private final int maxPips;
 
   public Puzzle(List<Position> positions, List<Integer> values) {
     int bound = positions.size();
@@ -21,6 +24,7 @@ public class Puzzle extends TreeMap<Position, Integer> {
     maxColumnIndex = Position.maxColumnIndex(positions);
     maxRowIndex = Position.maxRowIndex(positions);
     maxIndex = Position.maxIndex(positions);
+    maxPips = isEmpty() ? NO_PIPS : Collections.max(values);
   }
 
   public int getMaxColumnIndex() {
@@ -33,6 +37,10 @@ public class Puzzle extends TreeMap<Position, Integer> {
 
   public int getMaxIndex() {
     return maxIndex;
+  }
+
+  public int getMaxPips() {
+    return maxPips;
   }
 
   public static int calculateMaxColumnIndex(int maxPips) {
