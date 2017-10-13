@@ -54,4 +54,11 @@ class PuzzleTest {
   void calculateMaxColumnIndex() {
     assertEquals(2, Puzzle.calculateMaxColumnIndex(1));
   }
+
+  @Test
+  void print() {
+    assertEquals("0 0 0 \n" + "0 0 0 \n", puzzle.print(maxPips));
+    assertEquals("0 0 \n" + "0 0 \n" + "0 0 \n", puzzle.print(0));
+    assertEquals("0  0  0  0  0  0  \n", puzzle.print(6));
+  }
 }
