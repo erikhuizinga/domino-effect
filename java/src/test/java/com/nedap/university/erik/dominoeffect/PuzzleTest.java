@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /** Created by erik.huizinga on 13-10-17 */
@@ -37,8 +39,12 @@ class PuzzleTest {
 
   @Test
   void Puzzle() {
-    assertTrue(values.containsAll(puzzle.values()));
-    assertTrue(positions.containsAll(puzzle.keySet()));
+    Collection<Integer> puzzleValues = puzzle.values();
+    assertTrue(puzzleValues.containsAll(values));
+    assertTrue(values.containsAll(puzzleValues));
+    Set<Position> puzzlePositions = puzzle.keySet();
+    assertTrue(positions.containsAll(puzzlePositions));
+    assertTrue(puzzlePositions.containsAll(positions));
   }
 
   @Test

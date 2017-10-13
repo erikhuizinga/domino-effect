@@ -80,8 +80,7 @@ public class Position {
                 .filter(position -> position.rowIndex == result.rowIndex)
                 .filter(position -> position.columnIndex == result.columnIndex)
                 .findFirst()
-                .ifPresent(
-                    position -> result.index = position.index));
+                .ifPresent(position -> result.index = position.index));
     return results
         .stream()
         .filter(position -> position.index != NO_INDEX)

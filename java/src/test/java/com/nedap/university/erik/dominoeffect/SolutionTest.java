@@ -4,6 +4,7 @@ import static com.nedap.university.erik.dominoeffect.Solution.DEFAULT;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,9 @@ class SolutionTest {
 
   @Test
   void initialize() {
-    assertTrue(Set.of(DEFAULT).containsAll(Solution.initialize(new PuzzleTest().puzzle).values()));
+    Puzzle puzzle = new PuzzleTest().puzzle;
+    Collection<Integer> initialSolution = Solution.initialize(puzzle).values();
+    assertTrue(Set.of(DEFAULT).containsAll(initialSolution));
+    assertTrue(initialSolution.containsAll(Set.of(DEFAULT)));
   }
 }
