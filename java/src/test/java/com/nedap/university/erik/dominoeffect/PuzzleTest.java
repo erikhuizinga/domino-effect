@@ -40,4 +40,14 @@ class PuzzleTest {
     assertTrue(values.containsAll(puzzle.values()));
     assertTrue(positions.containsAll(puzzle.keySet()));
   }
+
+  @Test
+  void calculateMaxRowIndex() {
+    assertEquals(1, Puzzle.calculateMaxRowIndex(1));
+  }
+
+  @Test
+  void calculateMaxColumnIndex() {
+    assertEquals(2, Puzzle.calculateMaxColumnIndex(1));
+  }
 }

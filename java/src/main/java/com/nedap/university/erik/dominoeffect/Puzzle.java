@@ -2,7 +2,6 @@ package com.nedap.university.erik.dominoeffect;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Created by erik.huizinga on 13-10-17 */
 public class Puzzle extends HashMap<Position, Integer> {
@@ -30,5 +29,13 @@ public class Puzzle extends HashMap<Position, Integer> {
 
   public int getMaxIndex() {
     return maxIndex;
+  }
+
+  public static int calculateMaxColumnIndex(int maxPips) {
+    return calculateMaxRowIndex(maxPips) + 1;
+  }
+
+  public static int calculateMaxRowIndex(int maxPips) {
+    return maxPips;
   }
 }
