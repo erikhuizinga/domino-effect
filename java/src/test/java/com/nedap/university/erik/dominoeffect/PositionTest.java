@@ -73,9 +73,9 @@ class PositionTest {
   }
 
   @Test
-  void initialize() {
-    assertEquals(List.of(pos0, pos1), Position.initialize(0));
-    List<Position> initialPositions = Position.initialize(1);
+  void initialSetOf() {
+    assertEquals(List.of(pos0, pos1), Position.initialSetOf(0));
+    List<Position> initialPositions = Position.initialSetOf(1);
     assertTrue(positions.containsAll(initialPositions));
     assertTrue(initialPositions.containsAll(positions));
   }

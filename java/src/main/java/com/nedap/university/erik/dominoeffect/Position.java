@@ -54,7 +54,7 @@ public class Position implements Comparable {
         : Collections.max(positions.stream().map(indexFunction).collect(Collectors.toSet()));
   }
 
-  static List<Position> initialize(int maxPips) {
+  static List<Position> initialSetOf(int maxPips) {
     int maxColumnIndex = Puzzle.calculateMaxColumnIndex(maxPips);
     int maxRowIndex = Puzzle.calculateMaxRowIndex(maxPips);
     List<Position> positions = new ArrayList<>();
