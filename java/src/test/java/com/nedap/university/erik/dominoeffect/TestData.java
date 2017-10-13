@@ -3,6 +3,7 @@ package com.nedap.university.erik.dominoeffect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class TestData {
   public static Bone bone2;
   public static Bone bone3;
   public static Collection<Bone> bones1 = new LinkedList<>();
+  public static Puzzle emptyPuzzle;
 
   static void reset() {
     pos0 = new Position(0, 0, 0);
@@ -42,5 +44,6 @@ public class TestData {
     bones1.add(bone1);
     bones1.add(bone2);
     bones1.add(bone3);
+    emptyPuzzle = new Puzzle(Collections.emptyList(), Collections.emptyList());
   }
 }

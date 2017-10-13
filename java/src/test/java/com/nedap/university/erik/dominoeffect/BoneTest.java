@@ -6,9 +6,7 @@ import static com.nedap.university.erik.dominoeffect.TestData.bone3;
 import static com.nedap.university.erik.dominoeffect.TestData.bones1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Collection;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,27 +33,8 @@ class BoneTest {
   @Test
   void initialSetOf() {
     Set<Bone> bones = Bone.initialSetOf(1);
-    checkEquality(bones1, bones);
-    checkEquality(bones, bones1);
-  }
-
-  /** Why does {@code set1.containsAll(set2) && set2.containsAll(set1)} not work? */
-  private void checkEquality(Collection<Bone> expectedBones, Collection<Bone> actualBones) {
-    boolean ok = false;
-    for (Bone expected : expectedBones) {
-      for (Bone actual : actualBones) {
-        if (expected.equals(actual)) {
-          ok = true;
-          break;
-        }
-      }
-      if (ok) {
-        break;
-      }
-    }
-    if (!ok) {
-      fail("Expected Bone not found");
-    }
+    TestTools.checkEquivalence(bones1, bones);
+    TestTools.checkEquivalence(bones, bones1);
   }
 
   @Test

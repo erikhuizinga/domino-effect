@@ -1,10 +1,8 @@
 package com.nedap.university.erik.dominoeffect;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,10 +52,10 @@ public class Position implements Comparable {
         : Collections.max(positions.stream().map(indexFunction).collect(Collectors.toSet()));
   }
 
-  static List<Position> initialSetOf(int maxPips) {
+  static Set<Position> initialSetOf(int maxPips) {
     int maxColumnIndex = Puzzle.calculateMaxColumnIndex(maxPips);
     int maxRowIndex = Puzzle.calculateMaxRowIndex(maxPips);
-    List<Position> positions = new ArrayList<>();
+    Set<Position> positions = new HashSet<>();
     for (int columnIndex = 0; columnIndex <= maxColumnIndex; columnIndex++) {
       for (int rowIndex = 0; rowIndex <= maxRowIndex; rowIndex++) {
         int index = columnIndex + rowIndex + rowIndex * maxColumnIndex;

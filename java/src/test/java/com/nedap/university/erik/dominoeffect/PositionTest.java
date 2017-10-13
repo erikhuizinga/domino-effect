@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -74,10 +75,10 @@ class PositionTest {
 
   @Test
   void initialSetOf() {
-    assertEquals(List.of(pos0, pos1), Position.initialSetOf(0));
-    List<Position> initialPositions = Position.initialSetOf(1);
-    assertTrue(positions.containsAll(initialPositions));
-    assertTrue(initialPositions.containsAll(positions));
+    assertEquals(Set.of(pos0, pos1), Position.initialSetOf(0));
+    Set<Position> initialPositions = Position.initialSetOf(1);
+    TestTools.checkEquivalence(positions, initialPositions);
+    TestTools.checkEquivalence(initialPositions, positions);
   }
 
   @Test

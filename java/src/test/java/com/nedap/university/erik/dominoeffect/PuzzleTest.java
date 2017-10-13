@@ -1,6 +1,7 @@
 package com.nedap.university.erik.dominoeffect;
 
 import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
+import static com.nedap.university.erik.dominoeffect.TestData.emptyPuzzle;
 import static com.nedap.university.erik.dominoeffect.TestData.maxPips;
 import static com.nedap.university.erik.dominoeffect.TestData.positions;
 import static com.nedap.university.erik.dominoeffect.TestData.puzzle;
@@ -8,7 +9,6 @@ import static com.nedap.university.erik.dominoeffect.TestData.values;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.nedap.university.erik.dominoeffect.Puzzles.Assignment1;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -46,9 +46,12 @@ class PuzzleTest {
     Collection<Integer> puzzleValues = puzzle.values();
     assertTrue(puzzleValues.containsAll(values));
     assertTrue(values.containsAll(puzzleValues));
-    assertEquals(
-        NO_PIPS, new Puzzle(Collections.emptyList(), Collections.emptyList()).getMaxPips());
-    assertEquals(6, new Assignment1().getMaxPips());
+  }
+
+  @Test
+  void getMaxPips() {
+    assertEquals(NO_PIPS, emptyPuzzle.getMaxPips());
+    assertEquals(6, Puzzles.assignment1.getMaxPips());
   }
 
   @Test
@@ -66,5 +69,21 @@ class PuzzleTest {
     assertEquals("0 0 0 \n" + "0 0 0 \n", puzzle.print(maxPips));
     assertEquals("0 0 \n" + "0 0 \n" + "0 0 \n", puzzle.print(0));
     assertEquals("0  0  0  0  0  0  \n", puzzle.print(6));
+  }
+
+  @Test
+  void solve() {
+    assertEquals(
+        Collections.emptyList(),
+        emptyPuzzle.solve(
+            Collections.emptySet(), Collections.emptySet(), Solution.initialize(emptyPuzzle)));
+    int maxPips = 6;
+    assertTrue(
+        Puzzles.assignment1
+            .solve(
+                Position.initialSetOf(maxPips),
+                Bone.initialSetOf(maxPips),
+                Solution.initialize(Puzzles.assignment1))
+            .contains(Solutions.solution1_1));
   }
 }

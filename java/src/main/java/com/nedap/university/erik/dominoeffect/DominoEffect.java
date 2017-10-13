@@ -1,12 +1,12 @@
 package com.nedap.university.erik.dominoeffect;
 
-import com.nedap.university.erik.dominoeffect.Puzzles.Assignment1;
+import java.util.List;
 import java.util.Set;
 
 /** Created by erik.huizinga on 8-10-17 */
 public class DominoEffect {
   public static void main(String[] args) {
-    Puzzle puzzle = new Assignment1();
+    Puzzle puzzle = Puzzles.assignment1;
     int maxPips = puzzle.getMaxPips();
 
     System.out.println("Domino Effect");
@@ -17,6 +17,13 @@ public class DominoEffect {
     System.out.println(Bone.print(bones, maxPips));
     System.out.println();
 
+    System.out.println("Puzzle:");
     System.out.println(puzzle.print(maxPips));
+    System.out.println();
+
+    System.out.print("Solving... ");
+    List<Solution> solutions =
+        puzzle.solve(Position.initialSetOf(maxPips), bones, Solution.initialize(puzzle));
+    System.out.println();
   }
 }

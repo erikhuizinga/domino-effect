@@ -1,6 +1,7 @@
 package com.nedap.university.erik.dominoeffect;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /** Created by erik.huizinga on 13-10-17 */
@@ -8,7 +9,7 @@ public class Solution extends Puzzle {
 
   public static final int DEFAULT = 0;
 
-  public Solution(List<Position> positions, List<Integer> values) {
+  public Solution(Collection<Position> positions, Collection<Integer> values) {
     super(positions, values);
   }
 

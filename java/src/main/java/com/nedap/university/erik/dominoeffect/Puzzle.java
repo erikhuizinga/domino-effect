@@ -1,9 +1,11 @@
 package com.nedap.university.erik.dominoeffect;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -16,10 +18,12 @@ public class Puzzle extends TreeMap<Position, Integer> {
   private final int maxIndex;
   private final int maxPips;
 
-  public Puzzle(List<Position> positions, List<Integer> values) {
+  public Puzzle(Collection<Position> positions, Collection<Integer> values) {
     int bound = positions.size();
+    ArrayList<Position> positionsList = new ArrayList<>(positions);
+    ArrayList<Integer> valueList = new ArrayList<>(values);
     for (int i = 0; i < bound; i++) {
-      put(positions.get(i), values.get(i));
+      put(positionsList.get(i), valueList.get(i));
     }
     maxColumnIndex = Position.maxColumnIndex(positions);
     maxRowIndex = Position.maxRowIndex(positions);
@@ -71,7 +75,7 @@ public class Puzzle extends TreeMap<Position, Integer> {
     navigableChops.add(tailMap);
     return navigableChops
         .stream()
-        .map(map -> new Puzzle(new ArrayList<>(map.keySet()), new ArrayList<>(map.values())))
+        .map(map -> new Puzzle(map.keySet(), map.values()))
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -83,5 +87,10 @@ public class Puzzle extends TreeMap<Position, Integer> {
                 .map(integer -> Tools.pad(integer, maxPips))
                 .collect(Collectors.toList()))
         + "\n";
+  }
+
+  public List<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
+
+    return Collections.emptyList(); // TODO: Stub
   }
 }
