@@ -65,8 +65,8 @@ public class Position {
                 .filter(position -> position.rowIndex == result.rowIndex)
                 .filter(position -> position.columnIndex == result.columnIndex)
                 .findFirst()
-                .ifPresentOrElse(
-                    position -> result.index = position.index, () -> result.index = NO_INDEX));
+                .ifPresent(
+                    position -> result.index = position.index));
     return results
         .stream()
         .filter(position -> position.index != NO_INDEX)
