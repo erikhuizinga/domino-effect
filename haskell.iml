@@ -2,8 +2,8 @@
 <module type="HASKELL_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../haskell">
-      <sourceFolder url="file://$MODULE_DIR$/../../haskell/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/haskell">
+      <sourceFolder url="file://$MODULE_DIR$/haskell/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../haskell/.stack-work" />
     </content>
     <orderEntry type="inheritedJdk" />
