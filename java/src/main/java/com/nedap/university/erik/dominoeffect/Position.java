@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /** Created by erik.huizinga on 13-10-17 */
-public class Position {
+public class Position implements Comparable {
   public static final int NO_INDEX = -1;
   private final int rowIndex;
   private final int columnIndex;
@@ -85,6 +85,15 @@ public class Position {
         .stream()
         .filter(position -> position.index != NO_INDEX)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public int compareTo(Object obj) {
+    if (obj instanceof Position) {
+      Position that = (Position) obj;
+      return index - that.index;
+    }
+    throw new ClassCastException("Not a Position");
   }
 
   @Override

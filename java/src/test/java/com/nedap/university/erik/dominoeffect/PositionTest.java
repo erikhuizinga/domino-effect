@@ -1,11 +1,17 @@
 package com.nedap.university.erik.dominoeffect;
 
 import static com.nedap.university.erik.dominoeffect.Position.NO_INDEX;
+import static com.nedap.university.erik.dominoeffect.TestData.pos0;
+import static com.nedap.university.erik.dominoeffect.TestData.pos1;
+import static com.nedap.university.erik.dominoeffect.TestData.pos2;
+import static com.nedap.university.erik.dominoeffect.TestData.pos3;
+import static com.nedap.university.erik.dominoeffect.TestData.pos4;
+import static com.nedap.university.erik.dominoeffect.TestData.pos5;
+import static com.nedap.university.erik.dominoeffect.TestData.positions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,23 +20,9 @@ import org.junit.jupiter.api.Test;
 /** Created by erik.huizinga on 13-10-17 */
 class PositionTest {
 
-  private Position pos0;
-  private Position pos1;
-  private Position pos2;
-  private Position pos3;
-  private Collection<Position> positions;
-  private Position pos4;
-  private Position pos5;
-
   @BeforeEach
   void setUp() {
-    pos0 = new Position(0, 0, 0);
-    pos1 = new Position(0, 1, 1);
-    pos2 = new Position(0, 2, 2);
-    pos3 = new Position(1, 0, 3);
-    pos4 = new Position(1, 1, 4);
-    pos5 = new Position(1, 2, 5);
-    positions = new ArrayList<>(Arrays.asList(pos0, pos1, pos2, pos3, pos4, pos5));
+    TestData.reset();
   }
 
   @Test
@@ -86,5 +78,12 @@ class PositionTest {
     List<Position> initialPositions = Position.initialize(1);
     assertTrue(positions.containsAll(initialPositions));
     assertTrue(initialPositions.containsAll(positions));
+  }
+
+  @Test
+  void compareTo() {
+    assertTrue(pos0.compareTo(pos1) < 0);
+    assertTrue(pos2.compareTo(pos2) == 0);
+    assertTrue(pos4.compareTo(pos3) > 0);
   }
 }

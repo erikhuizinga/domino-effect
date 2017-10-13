@@ -1,10 +1,14 @@
 package com.nedap.university.erik.dominoeffect;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /** Created by erik.huizinga on 13-10-17 */
-public class Puzzle extends HashMap<Position, Integer> {
+public class Puzzle extends TreeMap<Position, Integer> {
   private final int maxColumnIndex;
   private final int maxRowIndex;
   private final int maxIndex;

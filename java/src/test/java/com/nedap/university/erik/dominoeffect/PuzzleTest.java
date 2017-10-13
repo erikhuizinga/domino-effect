@@ -1,30 +1,28 @@
 package com.nedap.university.erik.dominoeffect;
 
+import static com.nedap.university.erik.dominoeffect.TestData.maxPips;
+import static com.nedap.university.erik.dominoeffect.TestData.positions;
+import static com.nedap.university.erik.dominoeffect.TestData.puzzle;
+import static com.nedap.university.erik.dominoeffect.TestData.values;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /** Created by erik.huizinga on 13-10-17 */
 class PuzzleTest {
 
-  private Position pos000 = new Position(0, 0, 0);
-  private Position pos011 = new Position(0, 1, 1);
-  private Position pos102 = new Position(1, 0, 2);
-  private Position pos113 = new Position(1, 1, 3);
-  private ArrayList<Position> positions =
-      new ArrayList<>(Arrays.asList(pos000, pos011, pos102, pos113));
-  private List<Integer> values = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
-  public Puzzle puzzle = new Puzzle(positions, values);
+  @BeforeEach
+  void setUp() {
+    TestData.reset();
+  }
 
   @Test
   void getMaxColumnIndex() {
-    assertEquals(1, puzzle.getMaxColumnIndex());
+    assertEquals(2, puzzle.getMaxColumnIndex());
   }
 
   @Test
@@ -34,17 +32,17 @@ class PuzzleTest {
 
   @Test
   void getMaxIndex() {
-    assertEquals(3, puzzle.getMaxIndex());
+    assertEquals(5, puzzle.getMaxIndex());
   }
 
   @Test
   void Puzzle() {
-    Collection<Integer> puzzleValues = puzzle.values();
-    assertTrue(puzzleValues.containsAll(values));
-    assertTrue(values.containsAll(puzzleValues));
     Set<Position> puzzlePositions = puzzle.keySet();
     assertTrue(positions.containsAll(puzzlePositions));
     assertTrue(puzzlePositions.containsAll(positions));
+    Collection<Integer> puzzleValues = puzzle.values();
+    assertTrue(puzzleValues.containsAll(values));
+    assertTrue(values.containsAll(puzzleValues));
   }
 
   @Test
