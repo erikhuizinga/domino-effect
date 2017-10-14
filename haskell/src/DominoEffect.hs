@@ -197,7 +197,7 @@ findMoves puzzle (position:positions) bones =
   [ (position, neighbourPosition, boneNumber, boneNumber)
   | ((_, bonePips2), boneNumber) <- bonesWithPips (head $ puzzle `get` position) bones
   , neighbourPosition <- neighboursInSet position positions
-  , let neighbourPips = head $ get puzzle neighbourPosition
+  , let neighbourPips = head $ puzzle `get` neighbourPosition
   , bonePips2 == neighbourPips
   ]
 
