@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Created by erik.huizinga on 13-10-17 */
 public class TestData {
@@ -17,8 +20,8 @@ public class TestData {
   public static Position pos4;
   public static Position pos5;
   public static int maxPips;
-  public static List<Position> positions;
-  public static Puzzle puzzle;
+  public static Set<Position> positions1;
+  public static Puzzle puzzle1;
   public static List<Integer> values;
   public static Bone bone1;
   public static Bone bone2;
@@ -34,9 +37,9 @@ public class TestData {
     pos4 = new Position(1, 1, 4);
     pos5 = new Position(1, 2, 5);
     maxPips = 1;
-    positions = new ArrayList<>(List.of(pos0, pos1, pos2, pos3, pos4, pos5));
-    values = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0));
-    puzzle = new Puzzle(positions, values);
+    positions1 = new TreeSet<>(Set.of(pos0, pos1, pos2, pos3, pos4, pos5));
+    values = List.of(0, 0, 0, 1, 1, 1);
+    puzzle1 = new Puzzle(positions1, values);
     bone1 = new Bone(0, 0, 1);
     bone2 = new Bone(0, 1, 2);
     bone3 = new Bone(1, 1, 3);

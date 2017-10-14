@@ -63,7 +63,7 @@ public class Puzzle extends TreeMap<Position, Integer> {
   public String print(int maxPips) {
     List<Puzzle> rows = chop(calculateMaxColumnIndex(maxPips) + 1);
     return String.join(
-        "", rows.stream().map(puzzle -> puzzle.showRow(maxPips)).collect(Collectors.toList()));
+        "\n", rows.stream().map(puzzle -> puzzle.showRow(maxPips)).collect(Collectors.toList()));
   }
 
   private List<Puzzle> chop(int n) {
@@ -86,12 +86,8 @@ public class Puzzle extends TreeMap<Position, Integer> {
 
   private String showRow(int maxPips) {
     return String.join(
-            "",
-            values()
-                .stream()
-                .map(integer -> Tools.pad(integer, maxPips))
-                .collect(Collectors.toList()))
-        + "\n";
+        "",
+        values().stream().map(integer -> Tools.pad(integer, maxPips)).collect(Collectors.toList()));
   }
 
   public Set<Solution> solve(TreeSet<Position> positions, Set<Bone> bones, Solution solution) {

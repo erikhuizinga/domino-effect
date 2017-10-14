@@ -4,7 +4,7 @@ import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
 import static com.nedap.university.erik.dominoeffect.TestData.emptyPuzzle;
 import static com.nedap.university.erik.dominoeffect.TestData.maxPips;
 import static com.nedap.university.erik.dominoeffect.TestData.positions;
-import static com.nedap.university.erik.dominoeffect.TestData.puzzle;
+import static com.nedap.university.erik.dominoeffect.TestData.puzzle1;
 import static com.nedap.university.erik.dominoeffect.TestData.values;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,9 +67,9 @@ class PuzzleTest {
 
   @Test
   void print() {
-    assertEquals("0 0 0 \n" + "0 0 0 \n", puzzle.print(maxPips));
-    assertEquals("0 0 \n" + "0 0 \n" + "0 0 \n", puzzle.print(0));
-    assertEquals("0  0  0  0  0  0  \n", puzzle.print(6));
+    assertEquals("0 0 0 \n" + "1 1 1 ", puzzle1.print(maxPips1));
+    assertEquals("0 0 \n" + "0 1 \n" + "1 1 ", puzzle1.print(0));
+    assertEquals("0  0  0  1  1  1  ", puzzle1.print(6));
   }
 
   @Test
