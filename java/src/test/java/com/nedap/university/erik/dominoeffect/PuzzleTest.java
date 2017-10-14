@@ -74,7 +74,7 @@ class PuzzleTest {
   @Test
   void solve() {
     assertEquals(
-        Collections.emptyList(),
+        Collections.emptySet(),
         emptyPuzzle.solve(
             Collections.emptySet(), Collections.emptySet(), Solution.initializeFor(emptyPuzzle)));
     int maxPips = 6;

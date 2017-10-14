@@ -1,6 +1,5 @@
 package com.nedap.university.erik.dominoeffect;
 
-import java.util.List;
 import java.util.Set;
 
 /** Created by erik.huizinga on 8-10-17 */
@@ -22,7 +21,7 @@ public class DominoEffect {
     System.out.println();
 
     System.out.print("Solving... ");
-    List<Solution> solutions =
+    Set<Solution> solutions =
         puzzle.solve(Position.initialSetOf(maxPips), bones, Solution.initializeFor(puzzle));
     System.out.println();
   }

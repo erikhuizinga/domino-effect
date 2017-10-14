@@ -89,8 +89,8 @@ public class Puzzle extends TreeMap<Position, Integer> {
         + "\n";
   }
 
-  public List<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
+  public Set<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
 
-    return Collections.emptyList(); // TODO: Stub
+    return Collections.emptySet(); // TODO: Stub
   }
 }
