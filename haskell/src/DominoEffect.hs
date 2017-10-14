@@ -40,7 +40,7 @@ scriptDominoEffect = funDominoEffect (inputs !! maxPips) maxPips
 -- | Function to solve the Domino Effect challenge
 funDominoEffect :: Puzzle -> Int -> IO ()
 funDominoEffect puzzle maxPips = do
-  putStrLn "Domino Effect"
+  putStrLn welcome
   putStrLn ""
   --
   let bones = funInitialBones maxPips
@@ -274,3 +274,11 @@ printLength = (+ 2) . truncate . logBase 10 . fromIntegral . (* 2) . funNumBones
 -- | Pad a 'String' by appending spaces up to a uniform length based on @maxPips@
 pad :: Int -> String -> String
 pad maxPips showable = showable ++ replicate (printLength maxPips - length showable) ' '
+
+welcome :: String
+welcome =
+  "\n        D O M I N O\n" ++
+  " ___                    ___\n" ++
+  "|o o|   E F F E C T    |o o|\n" ++
+  "|o_o| ___ ___  ___ ___ |o_o|\n" ++
+  "|o  ||o  |ooo||ooo|o o||o o|\n" ++ "|__o||__o|ooo||ooo|o_o||o_o|\n"
