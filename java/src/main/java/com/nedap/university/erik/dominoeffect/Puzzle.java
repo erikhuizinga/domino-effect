@@ -55,6 +55,10 @@ public class Puzzle extends TreeMap<Position, Integer> {
     return maxPips;
   }
 
+  private static boolean okToContinue(Set<Position> positions, Set<Bone> bones) {
+    return positions.isEmpty() ^ bones.isEmpty();
+  }
+
   public String print(int maxPips) {
     List<Puzzle> rows = chop(calculateMaxColumnIndex(maxPips) + 1);
     return String.join(
@@ -90,7 +94,11 @@ public class Puzzle extends TreeMap<Position, Integer> {
   }
 
   public Set<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
-
+    if (solution.isSolved()) {
+      return Set.of(solution);
+    } else if (!okToContinue(positions, bones)) {
+      return Collections.emptySet();
+    }
     return Collections.emptySet(); // TODO: Stub
   }
 }
