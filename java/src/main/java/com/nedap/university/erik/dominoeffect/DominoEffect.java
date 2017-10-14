@@ -8,7 +8,7 @@ public class DominoEffect {
     Puzzle puzzle = Puzzles.assignment1;
     int maxPips = puzzle.getMaxPips();
 
-    System.out.println("Domino Effect");
+    System.out.println(welcome());
     System.out.println();
 
     System.out.println("Bones:");
@@ -28,5 +28,14 @@ public class DominoEffect {
 
     System.out.println("Solutions:");
     System.out.println(Solutions.print(solutions));
+  }
+
+  private static String welcome() {
+    return "\n        D O M I N O\n"
+        + " ___                    ___\n"
+        + "|o o|   E F F E C T    |o o|\n"
+        + "|o_o| ___ ___  ___ ___ |o_o|\n"
+        + "|o  ||o  |ooo||ooo|o o||o o|\n"
+        + "|__o||__o|ooo||ooo|o_o||o_o|\n";
   }
 }
