@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -29,7 +30,7 @@ public class Puzzle extends TreeMap<Position, Integer> {
     maxColumnIndex = Position.maxColumnIndex(positions);
     maxRowIndex = Position.maxRowIndex(positions);
     maxIndex = Position.maxIndex(positions);
-    maxPips = isEmpty() ? NO_PIPS : Collections.max(values);
+    maxPips = calculateMaxPips();
   }
 
   public int getMaxColumnIndex() {
@@ -57,13 +58,18 @@ public class Puzzle extends TreeMap<Position, Integer> {
   }
 
   private static boolean okToContinue(Set<Position> positions, Set<Bone> bones) {
-    return positions.isEmpty() ^ bones.isEmpty();
+    return positions.isEmpty() == bones.isEmpty();
   }
 
-  public String print(int maxPips) {
-    List<Puzzle> rows = chop(calculateMaxColumnIndex(maxPips) + 1);
+  private int calculateMaxPips() {
+    return isEmpty() ? NO_PIPS : Collections.max(values());
+  }
+
+  public String print() {
+    List<Puzzle> rows = chop(calculateMaxColumnIndex(getMaxPips()) + 1);
     return String.join(
-        "\n", rows.stream().map(puzzle -> puzzle.showRow(maxPips)).collect(Collectors.toList()));
+        "\n",
+        rows.stream().map(puzzle -> puzzle.showRow(getMaxPips())).collect(Collectors.toList()));
   }
 
   private List<Puzzle> chop(int n) {
@@ -97,37 +103,20 @@ public class Puzzle extends TreeMap<Position, Integer> {
     if (!okToContinue(positions, bones)) {
       return Collections.emptySet();
     }
-    return findMoves(positions, bones)
-        .stream()
-        .map(
-            move ->
-                solve(
-                    Position.filterPositions(positions, move),
-                    Bone.filterBones(bones, move),
-                    solution.apply(move)))
-        .flatMap(Collection::stream)
-        .collect(Collectors.toSet());
-    //        .reduce(
-    //            (solutions1, solutions2) -> {
-    //              solutions1.addAll(solutions2);
-    //              return solutions1;
-    //            });
-    //    return Collections.emptySet(); // TODO: Stub
-  }
-
-  private List<Move> findMoves(Set<Position> positions, Set<Bone> bones) {
     TreeSet<Position> sortedPositions = new TreeSet<>(positions);
     Position position = sortedPositions.first();
     int positionsPips = get(position);
-    Collection<Position> neighbourPositions =
-        position.neighbours(sortedPositions.tailSet(position));
-    return neighbourPositions
+    return position
+        // Find the neighbours of this position ...
+        .neighbours(sortedPositions.tailSet(position))
         .stream()
         .map(
-            neighbourPosition -> // For each neighbour position...
-            bones
+            // ... and for each neighbour position ...
+            neighbourPosition ->
+                // ... and with the available bones ...
+                bones
                     .stream()
-                    // ... find bones with matching pips at this and that position ...
+                    // ... find any with matching pips at this and that position ...
                     .filter(bone -> bone.hasPips(positionsPips))
                     .map(bone -> bone.boneWithPipsFirst(positionsPips))
                     .filter(bone -> bone.hasSecondaryPips(get(neighbourPosition)))
@@ -138,13 +127,25 @@ public class Puzzle extends TreeMap<Position, Integer> {
                         boneNumber -> new Move(position, neighbourPosition, boneNumber, boneNumber))
                     // ... and store them in a list ...
                     .collect(Collectors.toList()))
-        // ... and join these lists of moves for all neighbours in a single list ...
-        .reduce(
-            (moves1, moves2) -> {
-              moves1.addAll(moves2);
-              return moves1;
-            })
-        // ... but if there are none, return an empty list
-        .orElse(Collections.emptyList());
+        // ... and join these lists of moves in a single stream ...
+        .flatMap(Collection::stream)
+        .map(
+            move ->
+                // ... and solve again ...
+                solve(
+                    // ... using the remaining positions ...
+                    Position.filterPositions(positions, move),
+                    // ... and and the remaining bones ...
+                    Bone.filterBones(bones, move),
+                    // ... and the updated solution ...
+                    solution.update(move)))
+        // ... and collect these sets of solutions into one set
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(maxPips, keySet(), values());
   }
 }

@@ -1,5 +1,7 @@
 package com.nedap.university.erik.dominoeffect;
 
+import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +15,22 @@ import java.util.stream.IntStream;
 /** Created by erik.huizinga on 13-10-17 */
 public class Bone implements Map<Integer, List<Integer>>, Comparable {
 
+  private static final Map<Integer, Integer> totalNumberMaxPipsMap =
+      Map.of(
+          totalNumber(0),
+          0,
+          totalNumber(1),
+          1,
+          totalNumber(2),
+          2,
+          totalNumber(3),
+          3,
+          totalNumber(4),
+          4,
+          totalNumber(5),
+          5,
+          totalNumber(6),
+          6);
   private final Map<Integer, List<Integer>> map;
   private final int boneNumber;
   private final int pips0;
@@ -41,6 +59,11 @@ public class Bone implements Map<Integer, List<Integer>>, Comparable {
     return IntStream.rangeClosed(1, maxPips + 1).sum();
   }
 
+  public static int maxPips(int totalNumber) {
+    Integer maxPips = totalNumberMaxPipsMap.get(totalNumber);
+    return maxPips == null ? NO_PIPS : maxPips;
+  }
+
   public static SortedSet<Bone> initialSetOf(int maxPips) {
     SortedSet<Bone> bones = new TreeSet<>();
     int boneNumber = 1;
@@ -56,6 +79,17 @@ public class Bone implements Map<Integer, List<Integer>>, Comparable {
   public static String print(Collection<Bone> bones, int maxPips) {
     return String.join(
         "\n", bones.stream().map(bone -> bone.print(maxPips)).collect(Collectors.toList()));
+  }
+
+  public static Set<Bone> filterBones(Set<Bone> bones, Move move) {
+    TreeSet<Bone> bones1 =
+        new TreeSet<>(
+            bones
+                .stream()
+                .filter(bone -> bone.boneNumber != move.getValue1())
+                .filter(bone -> bone.boneNumber != move.getValue2())
+                .collect(Collectors.toSet()));
+    return bones1;
   }
 
   public String print(int maxPips) {
@@ -76,14 +110,6 @@ public class Bone implements Map<Integer, List<Integer>>, Comparable {
 
   public boolean hasSecondaryPips(int pips) {
     return pips1 == pips;
-  }
-
-  public static Set<Bone> filterBones(Set<Bone> bones, Move move) {
-    return bones
-        .stream()
-        .filter(bone -> bone.boneNumber != move.getValue1())
-        .filter(bone -> bone.boneNumber != move.getValue2())
-        .collect(Collectors.toSet());
   }
 
   @Override

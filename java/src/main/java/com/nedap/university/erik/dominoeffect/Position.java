@@ -2,6 +2,7 @@ package com.nedap.university.erik.dominoeffect;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -12,7 +13,6 @@ public class Position implements Comparable {
   public static final int NO_INDEX = -1;
   private final int rowIndex;
   private final int columnIndex;
-
   private int index;
 
   public Position(int rowIndex, int columnIndex, int index) {
@@ -66,11 +66,12 @@ public class Position implements Comparable {
   }
 
   public static Set<Position> filterPositions(Set<Position> positions, Move move) {
-    return positions
-        .stream()
-        .filter(position -> position != move.getPosition1())
-        .filter(position -> position != move.getPosition2())
-        .collect(Collectors.toSet());
+    return new TreeSet<>(
+        positions
+            .stream()
+            .filter(position -> !position.equals(move.getPosition1()))
+            .filter(position -> !position.equals(move.getPosition2()))
+            .collect(Collectors.toSet()));
   }
 
   public Collection<Position> neighbours(Collection<Position> positions) {
@@ -115,5 +116,10 @@ public class Position implements Comparable {
   @Override
   public String toString() {
     return "(" + rowIndex + ", " + columnIndex + ", " + index + ")";
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(rowIndex, columnIndex, index);
   }
 }

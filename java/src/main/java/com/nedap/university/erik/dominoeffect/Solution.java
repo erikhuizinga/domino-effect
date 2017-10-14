@@ -2,8 +2,8 @@ package com.nedap.university.erik.dominoeffect;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /** Created by erik.huizinga on 13-10-17 */
 public class Solution extends Puzzle {
@@ -14,21 +14,36 @@ public class Solution extends Puzzle {
     super(positions, values);
   }
 
+  private Solution(Puzzle puzzle) {
+    this(
+        puzzle.keySet(),
+        new ArrayList<>(puzzle.values())
+            .stream()
+            .map(integer -> DEFAULT)
+            .collect(Collectors.toList()));
+  }
+
   public boolean isSolved() {
     return !containsValue(DEFAULT);
   }
 
   public static Solution initializeFor(Puzzle puzzle) {
-    List<Integer> values = new ArrayList<>(puzzle.values());
-    values.replaceAll(integer -> DEFAULT);
-    return new Solution(new ArrayList<>(puzzle.keySet()), values);
+    return new Solution(puzzle);
   }
 
-  public static String print(Set<Solution> solutions) {
-    return ""; // TODO: Stub
+  public Solution update(Move move) {
+    Solution updated = new Solution(keySet(), values());
+    updated.put(move.getPosition1(), move.getValue1());
+    updated.put(move.getPosition2(), move.getValue2());
+    return updated;
   }
 
-  public Solution apply(Move move) {
-    return this; // TODO: Stub
+  private int calculateMaxPips() {
+    return Bone.maxPips(Collections.max(values()));
+  }
+
+  @Override
+  public int getMaxPips() {
+    return calculateMaxPips();
   }
 }

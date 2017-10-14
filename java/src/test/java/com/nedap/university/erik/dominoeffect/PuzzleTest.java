@@ -1,17 +1,17 @@
 package com.nedap.university.erik.dominoeffect;
 
 import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
-import static com.nedap.university.erik.dominoeffect.TestData.bones1;
 import static com.nedap.university.erik.dominoeffect.TestData.emptyPuzzle;
-import static com.nedap.university.erik.dominoeffect.TestData.maxPips1;
 import static com.nedap.university.erik.dominoeffect.TestData.positions1;
 import static com.nedap.university.erik.dominoeffect.TestData.puzzle1;
 import static com.nedap.university.erik.dominoeffect.TestData.values;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,9 +68,10 @@ class PuzzleTest {
 
   @Test
   void print() {
-    assertEquals("0 0 0 \n" + "1 1 1 ", puzzle1.print(maxPips1));
-    assertEquals("0 0 \n" + "0 1 \n" + "1 1 ", puzzle1.print(0));
-    assertEquals("0  0  0  1  1  1  ", puzzle1.print(6));
+    assertEquals("0 0 0 \n" + "1 1 1 ", puzzle1.print());
+    assertEquals(
+        "0 0 0 \n" + "1 1 1 \n\n" + "0 0 0 \n" + "1 1 1 ",
+        Puzzles.print(List.of(puzzle1, puzzle1)));
   }
 
   @Test
@@ -81,13 +82,23 @@ class PuzzleTest {
         emptyPuzzle.solve(new TreeSet<>(), Collections.emptySet(), emptySolution));
     assertEquals(Set.of(Solutions.solution1_1), puzzle1.solve(null, null, Solutions.solution1_1));
 
-    int maxPips = 6;
-    assertTrue(
-        Puzzles.assignment1
-            .solve(
-                Position.initialSetOf(maxPips),
-                Bone.initialSetOf(maxPips),
-                Solution.initializeFor(Puzzles.assignment1))
-            .contains(Solutions.solution1_1));
+    int maxPips = Puzzles.assignment1.getMaxPips();
+    Set<Solution> solutions =
+        Puzzles.assignment1.solve(
+            Position.initialSetOf(maxPips),
+            Bone.initialSetOf(maxPips),
+            Solution.initializeFor(Puzzles.assignment1));
+
+    //    assertTrue(solutions.contains(Solutions.solution1_1));
+    boolean found = false;
+    for (Solution solution : solutions) {
+      if (solution.equals(Solutions.solution1_1)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      fail("Expected solution not found!");
+    }
   }
 }

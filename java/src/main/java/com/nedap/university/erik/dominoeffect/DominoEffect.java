@@ -17,13 +17,13 @@ public class DominoEffect {
     System.out.println();
 
     System.out.println("Puzzle:");
-    System.out.println(puzzle.print(maxPips));
+    System.out.println(puzzle.print());
     System.out.println();
 
     System.out.print("Solving... ");
     Set<Solution> solutions =
         puzzle.solve(Position.initialSetOf(maxPips), bones, Solution.initializeFor(puzzle));
-    System.out.println(Solution.print(solutions));
+    System.out.println(Solutions.print(solutions));
     System.out.println();
   }
 }
