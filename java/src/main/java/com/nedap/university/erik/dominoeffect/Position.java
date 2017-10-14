@@ -67,10 +67,9 @@ public class Position implements Comparable {
 
   public Collection<Position> neighbours(Collection<Position> positions) {
     Collection<Position> results =
-        new HashSet<>(
-            Set.of(
-                new Position(rowIndex, columnIndex + 1, NO_INDEX),
-                new Position(rowIndex + 1, columnIndex, NO_INDEX)));
+        Set.of(
+            new Position(rowIndex, columnIndex + 1, NO_INDEX),
+            new Position(rowIndex + 1, columnIndex, NO_INDEX));
     results.forEach(
         result ->
             positions

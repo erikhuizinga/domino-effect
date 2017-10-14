@@ -34,7 +34,7 @@ public class TestData {
     pos4 = new Position(1, 1, 4);
     pos5 = new Position(1, 2, 5);
     maxPips = 1;
-    positions = new ArrayList<>(Arrays.asList(pos0, pos1, pos2, pos3, pos4, pos5));
+    positions = new ArrayList<>(List.of(pos0, pos1, pos2, pos3, pos4, pos5));
     values = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0));
     puzzle = new Puzzle(positions, values);
     bone1 = new Bone(0, 0, 1);

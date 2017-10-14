@@ -29,7 +29,7 @@ class SolutionTest {
 
   @Test
   void initialize() {
-    Collection<Integer> initialSolution = Solution.initialize(puzzle).values();
+    Collection<Integer> initialSolution = Solution.initializeFor(puzzle).values();
     assertTrue(Set.of(DEFAULT).containsAll(initialSolution));
     assertTrue(initialSolution.containsAll(Set.of(DEFAULT)));
   }

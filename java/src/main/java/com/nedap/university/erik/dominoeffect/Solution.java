@@ -17,7 +17,7 @@ public class Solution extends Puzzle {
     return !containsValue(DEFAULT);
   }
 
-  public static Solution initialize(Puzzle puzzle) {
+  public static Solution initializeFor(Puzzle puzzle) {
     List<Integer> values = new ArrayList<>(puzzle.values());
     values.replaceAll(integer -> DEFAULT);
     return new Solution(new ArrayList<>(puzzle.keySet()), values);

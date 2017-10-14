@@ -76,14 +76,14 @@ class PuzzleTest {
     assertEquals(
         Collections.emptyList(),
         emptyPuzzle.solve(
-            Collections.emptySet(), Collections.emptySet(), Solution.initialize(emptyPuzzle)));
+            Collections.emptySet(), Collections.emptySet(), Solution.initializeFor(emptyPuzzle)));
     int maxPips = 6;
     assertTrue(
         Puzzles.assignment1
             .solve(
                 Position.initialSetOf(maxPips),
                 Bone.initialSetOf(maxPips),
-                Solution.initialize(Puzzles.assignment1))
+                Solution.initializeFor(Puzzles.assignment1))
             .contains(Solutions.solution1_1));
   }
 }
