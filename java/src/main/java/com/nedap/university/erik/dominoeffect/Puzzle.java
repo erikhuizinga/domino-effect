@@ -90,12 +90,61 @@ public class Puzzle extends TreeMap<Position, Integer> {
         values().stream().map(integer -> Tools.pad(integer, maxPips)).collect(Collectors.toList()));
   }
 
-  public Set<Solution> solve(TreeSet<Position> positions, Set<Bone> bones, Solution solution) {
+  public Set<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
     if (solution.isSolved()) {
       return Set.of(solution);
-    } else if (!okToContinue(positions, bones)) {
+    }
+    if (!okToContinue(positions, bones)) {
       return Collections.emptySet();
     }
-    return Collections.emptySet(); // TODO: Stub
+    return findMoves(positions, bones)
+        .stream()
+        .map(
+            move ->
+                solve(
+                    Position.filterPositions(positions, move),
+                    Bone.filterBones(bones, move),
+                    solution.apply(move)))
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+    //        .reduce(
+    //            (solutions1, solutions2) -> {
+    //              solutions1.addAll(solutions2);
+    //              return solutions1;
+    //            });
+    //    return Collections.emptySet(); // TODO: Stub
+  }
+
+  private List<Move> findMoves(Set<Position> positions, Set<Bone> bones) {
+    TreeSet<Position> sortedPositions = new TreeSet<>(positions);
+    Position position = sortedPositions.first();
+    int positionsPips = get(position);
+    Collection<Position> neighbourPositions =
+        position.neighbours(sortedPositions.tailSet(position));
+    return neighbourPositions
+        .stream()
+        .map(
+            neighbourPosition -> // For each neighbour position...
+            bones
+                    .stream()
+                    // ... find bones with matching pips at this and that position ...
+                    .filter(bone -> bone.hasPips(positionsPips))
+                    .map(bone -> bone.boneWithPipsFirst(positionsPips))
+                    .filter(bone -> bone.hasSecondaryPips(get(neighbourPosition)))
+                    // ... and get their bone numbers ...
+                    .map(Bone::getBoneNumber)
+                    // ... and construct moves...
+                    .map(
+                        boneNumber -> new Move(position, neighbourPosition, boneNumber, boneNumber))
+                    // ... and store them in a list ...
+                    .collect(Collectors.toList()))
+        // ... and join these lists of moves for all neighbours in a single list ...
+        .reduce(
+            (moves1, moves2) -> {
+              moves1.addAll(moves2);
+              return moves1;
+            })
+        // ... but if there are none, return an empty list
+        .orElse(Collections.emptyList());
   }
 }

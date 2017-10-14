@@ -62,6 +62,30 @@ public class Bone implements Map<Integer, List<Integer>>, Comparable {
     return "#" + Tools.pad(boneNumber, maxPips) + pips0 + "|" + pips1;
   }
 
+  public Bone boneWithPipsFirst(int pips) {
+    return hasPrimaryPips(pips) ? this : new Bone(pips, pips0, boneNumber);
+  }
+
+  public boolean hasPips(int pips) {
+    return hasPrimaryPips(pips) || hasSecondaryPips(pips);
+  }
+
+  public boolean hasPrimaryPips(int pips) {
+    return pips0 == pips;
+  }
+
+  public boolean hasSecondaryPips(int pips) {
+    return pips1 == pips;
+  }
+
+  public static Set<Bone> filterBones(Set<Bone> bones, Move move) {
+    return bones
+        .stream()
+        .filter(bone -> bone.boneNumber != move.getValue1())
+        .filter(bone -> bone.boneNumber != move.getValue2())
+        .collect(Collectors.toSet());
+  }
+
   @Override
   public int compareTo(Object obj) {
     if (obj instanceof Bone) {

@@ -65,6 +65,14 @@ public class Position implements Comparable {
     return positions;
   }
 
+  public static Set<Position> filterPositions(Set<Position> positions, Move move) {
+    return positions
+        .stream()
+        .filter(position -> position != move.getPosition1())
+        .filter(position -> position != move.getPosition2())
+        .collect(Collectors.toSet());
+  }
+
   public Collection<Position> neighbours(Collection<Position> positions) {
     Collection<Position> results =
         Set.of(
@@ -102,5 +110,10 @@ public class Position implements Comparable {
           && thatPosition.index == index;
     }
     return super.equals(that);
+  }
+
+  @Override
+  public String toString() {
+    return "(" + rowIndex + ", " + columnIndex + ", " + index + ")";
   }
 }

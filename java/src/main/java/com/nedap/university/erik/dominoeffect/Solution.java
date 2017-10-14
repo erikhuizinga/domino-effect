@@ -3,6 +3,7 @@ package com.nedap.university.erik.dominoeffect;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /** Created by erik.huizinga on 13-10-17 */
 public class Solution extends Puzzle {
@@ -21,5 +22,13 @@ public class Solution extends Puzzle {
     List<Integer> values = new ArrayList<>(puzzle.values());
     values.replaceAll(integer -> DEFAULT);
     return new Solution(new ArrayList<>(puzzle.keySet()), values);
+  }
+
+  public static String print(Set<Solution> solutions) {
+    return ""; // TODO: Stub
+  }
+
+  public Solution apply(Move move) {
+    return this; // TODO: Stub
   }
 }

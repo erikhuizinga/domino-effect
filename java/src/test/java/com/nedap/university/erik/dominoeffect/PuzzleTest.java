@@ -1,9 +1,10 @@
 package com.nedap.university.erik.dominoeffect;
 
 import static com.nedap.university.erik.dominoeffect.Puzzle.NO_PIPS;
+import static com.nedap.university.erik.dominoeffect.TestData.bones1;
 import static com.nedap.university.erik.dominoeffect.TestData.emptyPuzzle;
-import static com.nedap.university.erik.dominoeffect.TestData.maxPips;
-import static com.nedap.university.erik.dominoeffect.TestData.positions;
+import static com.nedap.university.erik.dominoeffect.TestData.maxPips1;
+import static com.nedap.university.erik.dominoeffect.TestData.positions1;
 import static com.nedap.university.erik.dominoeffect.TestData.puzzle1;
 import static com.nedap.university.erik.dominoeffect.TestData.values;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,25 +27,25 @@ class PuzzleTest {
 
   @Test
   void getMaxColumnIndex() {
-    assertEquals(2, puzzle.getMaxColumnIndex());
+    assertEquals(2, puzzle1.getMaxColumnIndex());
   }
 
   @Test
   void getMaxRowIndex() {
-    assertEquals(1, puzzle.getMaxRowIndex());
+    assertEquals(1, puzzle1.getMaxRowIndex());
   }
 
   @Test
   void getMaxIndex() {
-    assertEquals(5, puzzle.getMaxIndex());
+    assertEquals(5, puzzle1.getMaxIndex());
   }
 
   @Test
   void Puzzle() {
-    Set<Position> puzzlePositions = puzzle.keySet();
-    assertTrue(positions.containsAll(puzzlePositions));
-    assertTrue(puzzlePositions.containsAll(positions));
-    Collection<Integer> puzzleValues = puzzle.values();
+    Set<Position> puzzlePositions = puzzle1.keySet();
+    assertTrue(positions1.containsAll(puzzlePositions));
+    assertTrue(puzzlePositions.containsAll(positions1));
+    Collection<Integer> puzzleValues = puzzle1.values();
     assertTrue(puzzleValues.containsAll(values));
     assertTrue(values.containsAll(puzzleValues));
   }
@@ -78,7 +79,7 @@ class PuzzleTest {
     assertEquals(
         Set.of(emptySolution),
         emptyPuzzle.solve(new TreeSet<>(), Collections.emptySet(), emptySolution));
-    assertEquals(Set.of(Solutions.solution1_1), puzzle.solve(null, null, Solutions.solution1_1));
+    assertEquals(Set.of(Solutions.solution1_1), puzzle1.solve(null, null, Solutions.solution1_1));
 
     int maxPips = 6;
     assertTrue(
