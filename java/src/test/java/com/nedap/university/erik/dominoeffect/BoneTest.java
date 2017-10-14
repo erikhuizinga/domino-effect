@@ -5,8 +5,10 @@ import static com.nedap.university.erik.dominoeffect.TestData.bone2;
 import static com.nedap.university.erik.dominoeffect.TestData.bone3;
 import static com.nedap.university.erik.dominoeffect.TestData.bones1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,7 +78,15 @@ class BoneTest {
   @Test
   void compareTo() {
     assertTrue(bone1.compareTo(bone2) < 0);
-    assertTrue(bone2.compareTo(bone2) == 0);
+    Bone bone2Copy = new Bone(bone2.getPips0(), bone2.getPips1(), bone2.getBoneNumber());
+    assertTrue(bone2.compareTo(bone2Copy) == 0);
     assertTrue(bone3.compareTo(bone2) > 0);
+  }
+
+  @Test
+  void singletonMapStatus() {
+    assertThrows(UnsupportedOperationException.class, () -> bone1.clear());
+    assertThrows(UnsupportedOperationException.class, () -> bone1.put(10, List.of(10, 10)));
+    assertThrows(UnsupportedOperationException.class, () -> bone1.remove(1));
   }
 }

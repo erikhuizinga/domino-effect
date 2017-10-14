@@ -1,9 +1,8 @@
 package com.nedap.university.erik.dominoeffect;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -12,21 +11,30 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /** Created by erik.huizinga on 13-10-17 */
-public class Bone implements Map<Integer, Set<Integer>>, Comparable {
+public class Bone implements Map<Integer, List<Integer>>, Comparable {
 
-  private final Map<Integer, Set<Integer>> map;
+  private final Map<Integer, List<Integer>> map;
   private final int boneNumber;
   private final int pips0;
   private final int pips1;
 
   public Bone(Integer pips0, Integer pips1, int boneNumber) {
-    // put(boneNumber, new HashSet<>(Arrays.asList(pips0, pips1)));
-    map =
-        Collections.singletonMap(
-            boneNumber, Collections.unmodifiableSet(new HashSet<>(Arrays.asList(pips0, pips1))));
+    map = Collections.singletonMap(boneNumber, List.of(pips0, pips1));
     this.pips0 = pips0;
     this.pips1 = pips1;
     this.boneNumber = boneNumber;
+  }
+
+  public int getBoneNumber() {
+    return boneNumber;
+  }
+
+  public int getPips0() {
+    return pips0;
+  }
+
+  public int getPips1() {
+    return pips1;
   }
 
   public static int totalNumber(int maxPips) {
@@ -84,22 +92,22 @@ public class Bone implements Map<Integer, Set<Integer>>, Comparable {
   }
 
   @Override
-  public Set<Integer> get(Object key) {
+  public List<Integer> get(Object key) {
     return map.get(key);
   }
 
   @Override
-  public Set<Integer> put(Integer key, Set<Integer> value) {
+  public List<Integer> put(Integer key, List<Integer> value) {
     return map.put(key, value);
   }
 
   @Override
-  public Set<Integer> remove(Object key) {
+  public List<Integer> remove(Object key) {
     return map.remove(key);
   }
 
   @Override
-  public void putAll(Map<? extends Integer, ? extends Set<Integer>> m) {
+  public void putAll(Map<? extends Integer, ? extends List<Integer>> m) {
     map.putAll(m);
   }
 
@@ -114,12 +122,12 @@ public class Bone implements Map<Integer, Set<Integer>>, Comparable {
   }
 
   @Override
-  public Collection<Set<Integer>> values() {
+  public Collection<List<Integer>> values() {
     return map.values();
   }
 
   @Override
-  public Set<Entry<Integer, Set<Integer>>> entrySet() {
+  public Set<Entry<Integer, List<Integer>>> entrySet() {
     return map.entrySet();
   }
 
