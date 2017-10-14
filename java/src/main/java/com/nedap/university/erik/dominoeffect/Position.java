@@ -2,8 +2,8 @@ package com.nedap.university.erik.dominoeffect;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,10 +52,10 @@ public class Position implements Comparable {
         : Collections.max(positions.stream().map(indexFunction).collect(Collectors.toSet()));
   }
 
-  static Set<Position> initialSetOf(int maxPips) {
+  static TreeSet<Position> initialSetOf(int maxPips) {
     int maxColumnIndex = Puzzle.calculateMaxColumnIndex(maxPips);
     int maxRowIndex = Puzzle.calculateMaxRowIndex(maxPips);
-    Set<Position> positions = new HashSet<>();
+    TreeSet<Position> positions = new TreeSet<>();
     for (int columnIndex = 0; columnIndex <= maxColumnIndex; columnIndex++) {
       for (int rowIndex = 0; rowIndex <= maxRowIndex; rowIndex++) {
         int index = columnIndex + rowIndex + rowIndex * maxColumnIndex;

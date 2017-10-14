@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.TreeSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -76,7 +77,7 @@ class PuzzleTest {
     Solution emptySolution = Solution.initializeFor(emptyPuzzle);
     assertEquals(
         Set.of(emptySolution),
-        emptyPuzzle.solve(Collections.emptySet(), Collections.emptySet(), emptySolution));
+        emptyPuzzle.solve(new TreeSet<>(), Collections.emptySet(), emptySolution));
     assertEquals(Set.of(Solutions.solution1_1), puzzle.solve(null, null, Solutions.solution1_1));
 
     int maxPips = 6;

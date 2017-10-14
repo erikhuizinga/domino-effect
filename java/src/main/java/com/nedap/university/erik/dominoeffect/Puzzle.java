@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /** Created by erik.huizinga on 13-10-17 */
@@ -93,7 +94,7 @@ public class Puzzle extends TreeMap<Position, Integer> {
         + "\n";
   }
 
-  public Set<Solution> solve(Set<Position> positions, Set<Bone> bones, Solution solution) {
+  public Set<Solution> solve(TreeSet<Position> positions, Set<Bone> bones, Solution solution) {
     if (solution.isSolved()) {
       return Set.of(solution);
     } else if (!okToContinue(positions, bones)) {
