@@ -2,9 +2,10 @@ package com.nedap.university.erik.dominoeffect;
 
 import static com.nedap.university.erik.dominoeffect.Solution.DEFAULT;
 import static com.nedap.university.erik.dominoeffect.TestData.pos0;
-import static com.nedap.university.erik.dominoeffect.TestData.puzzle;
+import static com.nedap.university.erik.dominoeffect.TestData.puzzle1;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,8 +30,13 @@ class SolutionTest {
 
   @Test
   void initialize() {
-    Collection<Integer> initialSolution = Solution.initializeFor(puzzle).values();
+    Collection<Integer> initialSolution = Solution.initializeFor(puzzle1).values();
     assertTrue(Set.of(DEFAULT).containsAll(initialSolution));
     assertTrue(initialSolution.containsAll(Set.of(DEFAULT)));
+  }
+
+  @Test
+  void print() {
+    fail("Implement me!");
   }
 }

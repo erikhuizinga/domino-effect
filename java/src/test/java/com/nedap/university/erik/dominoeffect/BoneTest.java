@@ -5,6 +5,7 @@ import static com.nedap.university.erik.dominoeffect.TestData.bone2;
 import static com.nedap.university.erik.dominoeffect.TestData.bone3;
 import static com.nedap.university.erik.dominoeffect.TestData.bones1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -88,5 +89,12 @@ class BoneTest {
     assertThrows(UnsupportedOperationException.class, () -> bone1.clear());
     assertThrows(UnsupportedOperationException.class, () -> bone1.put(10, List.of(10, 10)));
     assertThrows(UnsupportedOperationException.class, () -> bone1.remove(1));
+  }
+
+  @Test
+  void boneWithPipsFirst() {
+    assertNotEquals(bone2.getPips0(), bone2.getPips1());
+    assertEquals(bone2, bone2.boneWithPipsFirst(bone2.getPips0()));
+    assertNotEquals(bone2, bone2.boneWithPipsFirst(bone2.getPips1()));
   }
 }
