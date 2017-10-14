@@ -4,7 +4,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/haskell">
       <sourceFolder url="file://$MODULE_DIR$/haskell/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/haskell/.stack-work" />
+      <excludeFolder url="file://$MODULE_DIR$/../../haskell/.stack-work" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

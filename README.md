@@ -48,6 +48,17 @@ stack build
 stack exec domino-effect
 ```
 
+### Java
+
+From the root of this repo:
+
+```powershell
+cd java\src
+javac DominoEffect.java -d ..\out
+cd ..\out
+java DominoEffect
+```
+
 ## Building Domino Effect
 
 Prerequisites:

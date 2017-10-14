@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$//haskell.iml" filepath="$PROJECT_DIR$//haskell.iml" />
-      <module fileurl="file://$PROJECT_DIR$//java.iml" filepath="$PROJECT_DIR$//java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haskell.iml" filepath="$PROJECT_DIR$/haskell.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/java.iml" filepath="$PROJECT_DIR$/.idea/modules/java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/java_main.iml" filepath="$PROJECT_DIR$/.idea/modules/java_main.iml" group="java" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/java_test.iml" filepath="$PROJECT_DIR$/.idea/modules/java_test.iml" group="java" />
     </modules>
   </component>
 </project>
