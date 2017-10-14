@@ -73,5 +73,5 @@ Steps to import the project in IntelliJ IDEA:
 1. `git clone` the repo.
 1. Import the repo root as a project in IntelliJ IDEA.
 1. Add run configurations for both Java and Haskell:
-   1. Run > Edit Configurations... > + > Haskell Stack > Haskell Stack Runner > name the configuration > OK.
+   1. Run > Edit Configurations... > + > Haskell Stack > Haskell Stack Runner > name the configuration > remove the Before launch Build step > OK.
    1. Open `java/src/DominoEffect.java`, right click the `main` method and select Run 'Java' > Save the newly created run configuration.
