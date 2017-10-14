@@ -244,7 +244,6 @@ generatePuzzle maxPips = do
   return (shuffle' (inputs !! maxPips) (2 * funNumBones maxPips) gen)
 
 printBones :: [Bone] -> Int -> IO ()
--- printBones = mapM_ print
 printBones bones maxPips =
   sequence_
     [ putStrLn ("#" ++ pad maxPips (show number) ++ show pips1 ++ "|" ++ show pips2)
@@ -258,7 +257,6 @@ printGrid grid maxPips =
 
 -- | Pretty print a list
 showRow :: Show a => Int -> [a] -> String
---showRow maxPips = foldr ((++) . padShow maxPips) ""
 showRow _ []           = ""
 showRow maxPips (s:ss) = pad maxPips (show s) ++ showRow maxPips ss
 
