@@ -29,7 +29,7 @@ Get the [latest release](https://github.com/erikhuizinga/domino-effect/releases/
 ### Haskell
 
 | Platform | Shell | Command |
-| :------------- | :------------- |
+| :------------- | :------------- | :------------- |
 | macOS | `bash` | `./domino-effect` |
 | Windows | `powershell` | `.\domino-effect` |
 
