@@ -54,6 +54,7 @@ funDominoEffect [0,0,0,1,1,1] 1
 
 With JRE 9 installed, run `java -jar domino-effect.jar`.
 
+The Java solves a puzzle from the assignment, but has no other user interaction.
 
 ## Building Domino Effect
 
