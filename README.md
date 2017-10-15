@@ -20,7 +20,7 @@ This project aims to solve this puzzle with both a functional implementation in 
 
 ## Report
 
-See the wiki.
+[See the wiki.](https://www.github.com/erikhuizinga/domino-effect/wiki/Report)
 
 ## Running Domino Effect
 
