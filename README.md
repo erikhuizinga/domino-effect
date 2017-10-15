@@ -18,6 +18,10 @@ Developed by [*Erik Huizinga*](https://github.com/erikhuizinga), supervised by [
 A field of numbers needs to be filled with domino pieces (bones) such that the number of dots (pips) on the bones correspond to the numbers on the puzzle field.
 This project aims to solve this puzzle with both a functional implementation in Haskell and a not-so-functional implementation in Java.
 
+## Report
+
+See the wiki.
+
 ## Running Domino Effect
 
 *To be completed...*
