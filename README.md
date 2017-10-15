@@ -7,6 +7,8 @@
 |__o||__o|ooo||ooo|o_o||o_o|
 ```
 
+> *Solve the Domino Effect challenge in under 100 milliseconds!*
+
 
 Developed by [*Erik Huizinga*](https://github.com/erikhuizinga), supervised by [*Teun van Hemert*](https://github.com/teunvanhemert) and [*Steven Rekké*](https://github.com/srekke).
 
