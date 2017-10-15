@@ -37,8 +37,6 @@ class SolutionTest {
 
   @Test
   void print() {
-    String print = Solutions.solution1_1.print();
-    System.out.println(print);
     Assertions.assertEquals(
         "28 28 14 7  17 17 11 11 \n"
             + "10 10 14 7  2  2  21 23 \n"
@@ -47,11 +45,9 @@ class SolutionTest {
             + "12 12 22 22 5  5  26 26 \n"
             + "27 24 24 3  3  18 1  19 \n"
             + "27 6  6  20 20 18 1  19 ",
-        print);
+        Solutions.solution1_1.print());
     System.out.println();
 
-    String print1 = Solutions.print(List.of(Solutions.solution1_1, Solutions.solution1_1));
-    System.out.println(print1);
     Assertions.assertEquals(
         "28 28 14 7  17 17 11 11 \n"
             + "10 10 14 7  2  2  21 23 \n"
@@ -68,6 +64,6 @@ class SolutionTest {
             + "12 12 22 22 5  5  26 26 \n"
             + "27 24 24 3  3  18 1  19 \n"
             + "27 6  6  20 20 18 1  19 ",
-        print1);
+        Solutions.print(List.of(Solutions.solution1_1, Solutions.solution1_1)));
   }
 }
